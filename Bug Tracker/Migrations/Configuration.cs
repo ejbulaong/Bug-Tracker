@@ -54,6 +54,31 @@ namespace Bug_Tracker.Migrations
                 var moderatorRole = new IdentityRole("Submitter ");
                 roleManager.Create(moderatorRole);
             }
+
+            //Creating the adminuser
+            ApplicationUser adminUser;
+
+            if (!context.Users.Any(
+                p => p.UserName == "admin@mybugtracker.com"))
+            {
+                adminUser = new ApplicationUser();
+                adminUser.UserName = "admin@mybugtracker.com";
+                adminUser.Email = "admin@mybugtracker.com";
+
+                userManager.Create(adminUser, "Password-1");
+            }
+            else
+            {
+                adminUser = context
+                    .Users
+                    .First(p => p.UserName == "admin@mybugtracker.com");
+            }
+
+            //Make sure the user is on the admin role
+            if (!userManager.IsInRole(adminUser.Id, "Admin"))
+            {
+                userManager.AddToRole(adminUser.Id, "Admin");
+            }
         }
     }
 }
