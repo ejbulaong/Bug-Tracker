@@ -162,7 +162,7 @@ namespace Bug_Tracker.Controllers
                     new UserManager<ApplicationUser>(
                             new UserStore<ApplicationUser>(context));
 
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var user = new ApplicationUser {Name = model.Name, UserName = model.Email, Email = model.Email };
 
                 if (!context.Roles.Any(p => p.Name == "Submitter"))
                 {
