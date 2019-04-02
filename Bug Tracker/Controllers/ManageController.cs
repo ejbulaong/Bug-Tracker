@@ -15,9 +15,11 @@ namespace Bug_Tracker.Controllers
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
+        private ApplicationDbContext DbContext;
 
         public ManageController()
         {
+            DbContext = new ApplicationDbContext();
         }
 
         public ManageController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
@@ -32,9 +34,9 @@ namespace Bug_Tracker.Controllers
             {
                 return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
             }
-            private set 
-            { 
-                _signInManager = value; 
+            private set
+            {
+                _signInManager = value;
             }
         }
 
@@ -64,8 +66,12 @@ namespace Bug_Tracker.Controllers
                 : "";
 
             var userId = User.Identity.GetUserId();
+            var userName = (from u in DbContext.Users
+                            where u.Id == userId
+                            select u.Name).FirstOrDefault();
             var model = new IndexViewModel
             {
+                Name = userName,
                 HasPassword = HasPassword(),
                 PhoneNumber = await UserManager.GetPhoneNumberAsync(userId),
                 TwoFactor = await UserManager.GetTwoFactorEnabledAsync(userId),
@@ -213,7 +219,39 @@ namespace Bug_Tracker.Controllers
             return RedirectToAction("Index", new { Message = ManageMessageId.RemovePhoneSuccess });
         }
 
-        //
+        [HttpGet]
+        public ActionResult ChangeName()
+        {
+            var userId = User.Identity.GetUserId();
+            var userName = (from u in DbContext.Users
+                            where u.Id == userId
+                            select u.Name).FirstOrDefault();
+            var model = new ChangeNameViewModel
+            {
+                Name = userName
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult ChangeName(ChangeNameViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var userId = User.Identity.GetUserId();
+            var user = (from u in DbContext.Users
+                        where u.Id == userId
+                        select u).FirstOrDefault();
+            user.Name = model.Name;
+            DbContext.SaveChanges();
+
+            return RedirectToAction("Index","Manage");
+        }
+
         // GET: /Manage/ChangePassword
         public ActionResult ChangePassword()
         {
@@ -333,7 +371,7 @@ namespace Bug_Tracker.Controllers
             base.Dispose(disposing);
         }
 
-#region Helpers
+        #region Helpers
         // Used for XSRF protection when adding external logins
         private const string XsrfKey = "XsrfId";
 
@@ -384,6 +422,6 @@ namespace Bug_Tracker.Controllers
             Error
         }
 
-#endregion
+        #endregion
     }
 }

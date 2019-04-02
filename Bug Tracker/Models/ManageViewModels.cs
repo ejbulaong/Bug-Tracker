@@ -7,6 +7,7 @@ namespace Bug_Tracker.Models
 {
     public class IndexViewModel
     {
+        public string Name { get; set; }
         public bool HasPassword { get; set; }
         public IList<UserLoginInfo> Logins { get; set; }
         public string PhoneNumber { get; set; }
@@ -37,6 +38,13 @@ namespace Bug_Tracker.Models
         [Display(Name = "Confirm new password")]
         [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
+    }
+
+    public class ChangeNameViewModel
+    {
+        [Required]
+        [Display(Name = "Current Name")]
+        public string Name { get; set; }
     }
 
     public class ChangePasswordViewModel
