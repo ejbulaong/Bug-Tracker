@@ -66,12 +66,13 @@ namespace Bug_Tracker.Controllers
                 : "";
 
             var userId = User.Identity.GetUserId();
-            var userName = (from u in DbContext.Users
+            var user = (from u in DbContext.Users
                             where u.Id == userId
-                            select u.Name).FirstOrDefault();
+                            select u).FirstOrDefault();
             var model = new IndexViewModel
             {
-                Name = userName,
+                Name = user.Name,
+                Email = user.Email,
                 HasPassword = HasPassword(),
                 PhoneNumber = await UserManager.GetPhoneNumberAsync(userId),
                 TwoFactor = await UserManager.GetTwoFactorEnabledAsync(userId),
