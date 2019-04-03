@@ -8,6 +8,7 @@ namespace Bug_Tracker.Models.ViewModels
 {
     public class ManageUsersViewModel
     {
+        public string Id { get; set; }
         public string Name { get; set; }
         public string UserName { get; set; }
         public IList<string> Role { get; set; }

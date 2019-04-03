@@ -29,7 +29,6 @@ namespace Bug_Tracker.Controllers
         [Authorize(Roles = "Admin")]
         public ActionResult ManageUsers()
         {
-            //UserManager, used to manage users
             var userManager =
                 new UserManager<ApplicationUser>(
                         new UserStore<ApplicationUser>(DbContext));
@@ -41,8 +40,65 @@ namespace Bug_Tracker.Controllers
                 model.Add(
                     new ManageUsersViewModel
                     {
+                        Id = user.Id,
                         Name = user.Name,
                         UserName = user.Email
+                    });
+            }
+
+            foreach (var m in model)
+            {
+                var userId = (from u in DbContext.Users
+                              where u.UserName == m.UserName
+                              select u.Id).FirstOrDefault();
+
+                m.Role = userManager.GetRoles(userId);
+            }
+            return View(model);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public ActionResult ManageUsers(string id, string newRole)
+        {
+            var userManager =
+                new UserManager<ApplicationUser>(
+                        new UserStore<ApplicationUser>(DbContext));
+
+            var user = (from u in DbContext.Users
+                        where u.Id == id
+                        select u).FirstOrDefault();
+
+            var currentRole = userManager.GetRoles(user.Id).FirstOrDefault();
+            userManager.RemoveFromRole(user.Id, currentRole);
+
+            if (newRole == "Admin")
+            {
+                userManager.AddToRoles(user.Id, "Admin");
+            }
+            else if (newRole == "Project Manager")
+            {
+                userManager.AddToRoles(user.Id, "Project Manager");
+            }
+            else if (newRole == "Developer")
+            {
+                userManager.AddToRoles(user.Id, "Developer");
+            }
+            else if (newRole == "Submitter")
+            {
+                userManager.AddToRoles(user.Id, "Submitter");
+            }
+
+            var model = new List<ManageUsersViewModel>();
+
+            foreach (var u in DbContext.Users)
+            {
+                model.Add(
+                    new ManageUsersViewModel
+                    {
+                        Id = u.Id,
+                        Name = u.Name,
+                        UserName = u.Email
                     });
             }
 

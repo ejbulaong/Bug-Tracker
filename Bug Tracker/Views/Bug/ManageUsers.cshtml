@@ -18,7 +18,7 @@
                         <th>Name</th>
                         <th>Email</th>
                         <th>Current Role</th>
-                        <th>New Role</th>
+                        <th>Choose a new Role</th>
                         <th></th>
 
                     </tr>
@@ -26,27 +26,28 @@
                 <tbody>
                     @foreach (var m in Model)
                     {
-
-                        <tr>
-                            <td>@m.Name</td>
-                            <td>@m.UserName</td>
-                            @foreach (var r in m.Role)
-                            {
-                                <td>@r</td>
-                            }
-                            <td>
-                                <select class="form-control form-control-sm">
-                                    <option>Please choose a role</option>
-                                    <option>Admin</option>
-                                    <option>Project Manager</option>
-                                    <option>Developer</option>
-                                    <option>Submitter</option>
-                                </select>
-                            </td>
-                            <td>
-                                <button type="button" class="btn btn-primary">Save</button>
-                            </td>
-                        </tr>
+                        <form method="post" enctype="multipart/form-data" action="@Url.Action("ManageUsers","Bug",new { id = m.Id})">
+                            <tr>
+                                <td>@m.Name</td>
+                                <td>@m.UserName</td>
+                                @foreach (var r in m.Role)
+                                {
+                                    <td>@r</td>
+                                }
+                                    <td>
+                                        <select class="form-control form-control-sm" name="newRole">
+                                            <option value="" selected>Please choose a role</option>
+                                            <option value="Admin">Admin</option>
+                                            <option value="Project Manager">Project Manager</option>
+                                            <option value="Developer">Developer</option>
+                                            <option value="Submitter">Submitter</option>
+                                        </select>
+                                    </td>
+                                <td>
+                                    <button type="submit" class="btn btn-primary">Save</button>
+                                </td>
+                            </tr>
+                        </form>
                     }
                 </tbody>
             </table>
