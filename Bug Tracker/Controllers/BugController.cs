@@ -1,4 +1,5 @@
-﻿using Bug_Tracker.Models;
+﻿using Bug_Tracker.Enums;
+using Bug_Tracker.Models;
 using Bug_Tracker.Models.ViewModels;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
@@ -26,7 +27,8 @@ namespace Bug_Tracker.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin")]
+
+        [Authorize(Roles = nameof(UserRoles.Admin))]
         public ActionResult ManageUsers()
         {
             var userManager =
@@ -58,7 +60,7 @@ namespace Bug_Tracker.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = nameof(UserRoles.Admin))]
         public ActionResult ManageUsers(string id, string newRole)
         {
             var userManager =
@@ -68,25 +70,27 @@ namespace Bug_Tracker.Controllers
             var user = (from u in DbContext.Users
                         where u.Id == id
                         select u).FirstOrDefault();
+            if (newRole != "none")
+            {
+                var currentRole = userManager.GetRoles(user.Id).FirstOrDefault();
+                userManager.RemoveFromRole(user.Id, currentRole);
+            }
 
-            var currentRole = userManager.GetRoles(user.Id).FirstOrDefault();
-            userManager.RemoveFromRole(user.Id, currentRole);
-
-            if (newRole == "Admin")
+            if (newRole == nameof(UserRoles.Admin))
             {
-                userManager.AddToRoles(user.Id, "Admin");
+                userManager.AddToRoles(user.Id, nameof(UserRoles.Admin));
             }
-            else if (newRole == "Project Manager")
+            else if (newRole == nameof(UserRoles.ProjectManager))
             {
-                userManager.AddToRoles(user.Id, "Project Manager");
+                userManager.AddToRoles(user.Id, nameof(UserRoles.ProjectManager));
             }
-            else if (newRole == "Developer")
+            else if (newRole == nameof(UserRoles.Developer))
             {
-                userManager.AddToRoles(user.Id, "Developer");
+                userManager.AddToRoles(user.Id, nameof(UserRoles.Developer));
             }
-            else if (newRole == "Submitter")
+            else if (newRole == nameof(UserRoles.Submitter))
             {
-                userManager.AddToRoles(user.Id, "Submitter");
+                userManager.AddToRoles(user.Id, nameof(UserRoles.Submitter));
             }
 
             var model = new List<ManageUsersViewModel>();
@@ -111,6 +115,14 @@ namespace Bug_Tracker.Controllers
                 m.Role = userManager.GetRoles(userId);
             }
             return View(model);
+        }
+
+        [HttpGet]
+        [Authorize(Roles = nameof(UserRoles.Admin) +","+ nameof(UserRoles.ProjectManager))]
+
+        public ActionResult Create()
+        {
+            return null;
         }
     }
 }
