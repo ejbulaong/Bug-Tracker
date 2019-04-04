@@ -1,0 +1,15 @@
+﻿
+@{
+    ViewBag.Title = "CreateProject";
+}
+
+<h2>CreateProject</h2>
+
+<form method="post" action="@Url.Action("CreateProject","Bug")">
+    <div class="form-group">
+        <label for="exampleInputEmail1">Project Name</label>
+        <input type="text" name ="projectName" class="form-control" aria-describedby="emailHelp" placeholder="Enter project name">
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+

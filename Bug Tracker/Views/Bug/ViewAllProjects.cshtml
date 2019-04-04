@@ -1,0 +1,61 @@
+﻿@model List<ViewAllProjectsViewModel>
+@{
+    ViewBag.Title = "ViewAllProjects";
+}
+
+<h2>ViewAllProjects</h2>
+
+<!-- DataTales Example -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <a href="@Url.Action("CreateProject","Bug")" title="Create New Project"><i class="fas fa-plus"></i>
+            Create New Project            
+        </a>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Project Name</th>
+                        <th>Members</th>
+                        <th>Tickets</th>
+                        <th>Date Created</th>
+                        <th>Date Updated</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var m in Model)
+                    {
+                    <tr>
+                        <td>@m.Name</td>
+                        <td>Members</td>
+                        <td>Tickets</td>
+                        <td>@m.DateCreated</td>
+                        @if (m.DateUpdated == null)
+                        {
+                            <td>Not updated</td>
+                        }
+                        else
+                        {
+                            <td>@m.DateUpdated</td>
+                        }
+                        <td>
+                            <a href="#" title="Edit Members">
+                                <i class="fas fa-user-friends"></i>
+                            </a>
+                        </td>
+                        <td>
+                            <a href="/Projects/Edit/5" title="Edit Project">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

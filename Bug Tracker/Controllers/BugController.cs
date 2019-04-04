@@ -1,5 +1,6 @@
 ﻿using Bug_Tracker.Enums;
 using Bug_Tracker.Models;
+using Bug_Tracker.Models.Domain;
 using Bug_Tracker.Models.ViewModels;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
@@ -27,7 +28,6 @@ namespace Bug_Tracker.Controllers
         }
 
         [HttpGet]
-
         [Authorize(Roles = nameof(UserRoles.Admin))]
         public ActionResult ManageUsers()
         {
@@ -119,10 +119,41 @@ namespace Bug_Tracker.Controllers
 
         [HttpGet]
         [Authorize(Roles = nameof(UserRoles.Admin) +","+ nameof(UserRoles.ProjectManager))]
-
-        public ActionResult Create()
+        public ActionResult CreateProject()
         {
-            return null;
+            return View();
+        }
+
+        [HttpPost]
+        [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
+        public ActionResult CreateProject(string projectName)
+        {
+            var newProject = new Project()
+            {
+                Name = projectName
+            };
+
+            DbContext.Projects.Add(newProject);
+            DbContext.SaveChanges();
+
+            return RedirectToAction("ViewAllProjects","Bug");
+        }
+
+        [HttpGet]
+        [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
+        public ActionResult ViewAllProjects()
+        {
+            var model = (from p in DbContext.Projects
+                               where p != null
+                               select new ViewAllProjectsViewModel {
+                                   Id = p.Id,
+                                   Name = p.Name,
+                                   Users = p.Users,
+                                   DateCreated = p.DateCreated,
+                                   DateUpdated = p.DateUpdated
+                               }).ToList();
+
+            return View(model);
         }
     }
 }
