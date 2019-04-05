@@ -1,0 +1,72 @@
+﻿@model EditProjectViewModel
+@{
+    ViewBag.Title = "EditProject";
+}
+
+<h2>EditProject</h2>
+
+<form method="post" action="@Url.Action("EditProject","Bug",new {id=Model.Id })">
+    <div class="container">
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Name, "Project Name:")
+                    @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Name" })
+                    @Html.ValidationSummary("", new { @class = "text-danger" })
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+                <label>Members</label>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Unassign</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var u in Model.MemberUsers)
+                        {
+                            <tr>
+                                <td>@u.Name</td>
+                                <td>@u.Email</td>
+                                <td>
+                                    <a  href="@Url.Action("Unassign","Bug", new {projectId = Model.Id, userId = u.Id })">Unassign</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-6">
+                <label>Non Members</label>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Assign</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var u in Model.NonMemberUsers)
+                        {
+                            <tr>
+                                <td>@u.Name</td>
+                                <td>@u.Email</td>
+                                <td>
+                                    <a href="@Url.Action("Assign","Bug", new {projectId = Model.Id, userId = u.Id })">Assign</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+

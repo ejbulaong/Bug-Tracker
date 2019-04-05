@@ -24,7 +24,7 @@ namespace Bug_Tracker.Controllers
 
         public ActionResult Index()
         {
-            return View();
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpGet]
@@ -63,6 +63,11 @@ namespace Bug_Tracker.Controllers
         [Authorize(Roles = nameof(UserRoles.Admin))]
         public ActionResult ManageUsers(string id, string newRole)
         {
+            if (id == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             var userManager =
                 new UserManager<ApplicationUser>(
                         new UserStore<ApplicationUser>(DbContext));
@@ -118,16 +123,39 @@ namespace Bug_Tracker.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = nameof(UserRoles.Admin) +","+ nameof(UserRoles.ProjectManager))]
+        [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
         public ActionResult CreateProject()
         {
-            return View();
+            var users = (from u in DbContext.Users
+                         where u != null
+                         select u).ToList();
+
+            var model = new CreateProjectViewModel()
+            {
+                Users = users
+            };
+
+            return View(model);
         }
 
         [HttpPost]
         [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
         public ActionResult CreateProject(string projectName)
         {
+            if (!ModelState.IsValid)
+            {
+                var users = (from u in DbContext.Users
+                             where u != null
+                             select u).ToList();
+
+                var model = new CreateProjectViewModel()
+                {
+                    Users = users
+                };
+
+                return View(model);
+            }
+
             var newProject = new Project()
             {
                 Name = projectName
@@ -136,7 +164,7 @@ namespace Bug_Tracker.Controllers
             DbContext.Projects.Add(newProject);
             DbContext.SaveChanges();
 
-            return RedirectToAction("ViewAllProjects","Bug");
+            return RedirectToAction("ViewAllProjects", "Bug");
         }
 
         [HttpGet]
@@ -144,16 +172,186 @@ namespace Bug_Tracker.Controllers
         public ActionResult ViewAllProjects()
         {
             var model = (from p in DbContext.Projects
-                               where p != null
-                               select new ViewAllProjectsViewModel {
-                                   Id = p.Id,
-                                   Name = p.Name,
-                                   Users = p.Users,
-                                   DateCreated = p.DateCreated,
-                                   DateUpdated = p.DateUpdated
-                               }).ToList();
+                         where p != null
+                         select new ViewAllProjectsViewModel
+                         {
+                             Id = p.Id,
+                             Name = p.Name,
+                             Users = p.Users,
+                             DateCreated = p.DateCreated,
+                             DateUpdated = p.DateUpdated
+                         }).ToList();
 
             return View(model);
+        }
+
+        [HttpGet]
+        [Authorize]
+        public ActionResult ViewMyProjects()
+        {
+            var userId = User.Identity.GetUserId();
+            var userProjects = (from u in DbContext.Users
+                                where u.Id == userId
+                                select u.Projects).FirstOrDefault();
+
+            var model = (from p in userProjects
+                         where p != null
+                         select new ViewMyProjectsViewModel
+                         {
+                             Id = p.Id,
+                             Name = p.Name,
+                             Users = p.Users,
+                             DateCreated = p.DateCreated,
+                             DateUpdated = p.DateUpdated
+                         }).ToList();
+
+            return View(model);
+        }
+
+        [HttpGet]
+        [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
+        public ActionResult EditProject(int? Id)
+        {
+            if (Id == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var projectToEdit = (from p in DbContext.Projects
+                                 where p.Id == Id
+                                 select p).FirstOrDefault();
+
+            var memberUsers = projectToEdit.Users;
+            var nonMemberUsers = new List<ApplicationUser>();
+            var allUsers = (from u in DbContext.Users
+                            where u != null
+                            select u).ToList();
+
+            foreach(var u in allUsers)
+            {
+                if (!memberUsers.Contains(u))
+                {
+                    nonMemberUsers.Add(u);
+                }
+            }
+
+
+            var model = new EditProjectViewModel()
+            {
+                Id = projectToEdit.Id,
+                Name = projectToEdit.Name,
+                DateCreated = projectToEdit.DateCreated,
+                DateUpdated = projectToEdit.DateUpdated,
+                MemberUsers = memberUsers,
+                NonMemberUsers = nonMemberUsers
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
+        public ActionResult EditProject(int Id, EditProjectViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var projectToEdit = (from p in DbContext.Projects
+                                 where p.Id == Id
+                                 select p).FirstOrDefault();
+
+            projectToEdit.Name = model.Name;
+            projectToEdit.DateUpdated = DateTime.Now;
+
+            DbContext.SaveChanges();
+
+            return RedirectToAction("ViewMyProjects", "Bug");
+        }
+
+        [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
+        public ActionResult Assign(int projectId, string userId)
+        {
+            var project = (from p in DbContext.Projects
+                           where p.Id == projectId
+                           select p).FirstOrDefault();
+
+            var user = (from u in DbContext.Users
+                           where u.Id == userId
+                        select u).FirstOrDefault();
+
+            project.Users.Add(user);
+            DbContext.SaveChanges();
+
+            var memberUsers = project.Users;
+
+            var nonMemberUsers = new List<ApplicationUser>();
+            var allUsers = (from u in DbContext.Users
+                            where u != null
+                            select u).ToList();
+
+            foreach (var u in allUsers)
+            {
+                if (!memberUsers.Contains(u))
+                {
+                    nonMemberUsers.Add(u);
+                }
+            }
+
+            var model = new EditProjectViewModel()
+            {
+                Id= project.Id,
+                Name = project.Name,
+                DateCreated = project.DateCreated,
+                DateUpdated = project.DateUpdated,
+                MemberUsers = memberUsers,
+                NonMemberUsers = nonMemberUsers
+            };
+
+            return RedirectToAction("EditProject", "Bug", model);
+        }
+
+        [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
+        public ActionResult Unassign(int projectId, string userId)
+        {
+            var project = (from p in DbContext.Projects
+                           where p.Id == projectId
+                           select p).FirstOrDefault();
+
+            var user = (from u in DbContext.Users
+                        where u.Id == userId
+                        select u).FirstOrDefault();
+
+            project.Users.Remove(user);
+            DbContext.SaveChanges();
+
+            var memberUsers = project.Users;
+
+            var nonMemberUsers = new List<ApplicationUser>();
+            var allUsers = (from u in DbContext.Users
+                            where u != null
+                            select u).ToList();
+
+            foreach (var u in allUsers)
+            {
+                if (!memberUsers.Contains(u))
+                {
+                    nonMemberUsers.Add(u);
+                }
+            }
+
+            var model = new EditProjectViewModel()
+            {
+                Id = project.Id,
+                Name = project.Name,
+                DateCreated = project.DateCreated,
+                DateUpdated = project.DateUpdated,
+                MemberUsers = memberUsers,
+                NonMemberUsers = nonMemberUsers
+            };
+
+            return RedirectToAction("EditProject", "Bug", model);
         }
     }
 }

@@ -1,15 +1,50 @@
-﻿
+﻿@model CreateProjectViewModel
 @{
     ViewBag.Title = "CreateProject";
 }
 
 <h2>CreateProject</h2>
-
 <form method="post" action="@Url.Action("CreateProject","Bug")">
-    <div class="form-group">
-        <label for="exampleInputEmail1">Project Name</label>
-        <input type="text" name ="projectName" class="form-control" aria-describedby="emailHelp" placeholder="Enter project name">
+    <div class="container">
+        <div class="row">
+            <div class="col-4">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Name, "Project Name:")
+                    @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Name" })
+                    @Html.ValidationSummary("", new { @class = "text-danger" })
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
+            <div class="col-8">
+                <label>Assign Members</label>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Assign</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var u in Model.Users)
+                        {
+                            <tr>
+                                <td>@u.Name</td>
+                                <td>@u.Email</td>
+                                <td>
+                                    <input value="@u.Id " type="checkbox">
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
 </form>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+
 

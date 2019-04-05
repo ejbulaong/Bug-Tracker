@@ -1,9 +1,10 @@
-﻿@model List<ViewAllProjectsViewModel>
+﻿@model List<ViewMyProjectsViewModel>
+
 @{
-    ViewBag.Title = "ViewAllProjects";
+    ViewBag.Title = "ViewMyProjects";
 }
 
-<h2>ViewAllProjects</h2>
+<h2>ViewMyProjects</h2>
 
 <!-- DataTales Example -->
 <div class="card shadow mb-4">
@@ -32,7 +33,7 @@
                     {
                         <tr>
                             <td>@m.Name</td>
-                            <td>@m.Users.Count</td>
+                            <td>Members</td>
                             <td>Tickets</td>
                             <td>@m.DateCreated</td>
                             @if (m.DateUpdated == null)
@@ -49,7 +50,7 @@
                                 </a>
                             </td>
                             <td>
-                                <a href="@Url.Action("EditProject","Bug",new {id=m.Id })" title="Edit Project">
+                                <a href="/Projects/Edit/5" title="Edit Project">
                                     <i class="fas fa-edit"></i>
                                 </a>
                             </td>
