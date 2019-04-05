@@ -4,7 +4,7 @@
     ViewBag.Title = "ViewMyProjects";
 }
 
-<h2>ViewMyProjects</h2>
+<h2>My Projects</h2>
 
 <!-- DataTales Example -->
 <div class="card shadow mb-4">
@@ -33,8 +33,8 @@
                     {
                         <tr>
                             <td>@m.Name</td>
-                            <td>Members</td>
-                            <td>Tickets</td>
+                            <td>@m.Users.Count</td>
+                            <td>0</td>
                             <td>@m.DateCreated</td>
                             @if (m.DateUpdated == null)
                             {
@@ -45,12 +45,12 @@
                                 <td>@m.DateUpdated</td>
                             }
                             <td>
-                                <a href="#" title="Edit Members">
+                                <a href="@Url.Action("EditMembers","Bug",new {id=m.Id })" title="Edit Members">
                                     <i class="fas fa-user-friends"></i>
                                 </a>
                             </td>
                             <td>
-                                <a href="/Projects/Edit/5" title="Edit Project">
+                                <a href="@Url.Action("EditProject","Bug",new {id=m.Id })" title="Edit Project">
                                     <i class="fas fa-edit"></i>
                                 </a>
                             </td>

@@ -3,7 +3,7 @@
     ViewBag.Title = "CreateProject";
 }
 
-<h2>CreateProject</h2>
+<h2>Create Project</h2>
 <form method="post" action="@Url.Action("CreateProject","Bug")">
     <div class="container">
         <div class="row">
@@ -32,7 +32,8 @@
                                 <td>@u.Name</td>
                                 <td>@u.Email</td>
                                 <td>
-                                    <input value="@u.Id " type="checkbox">
+                                    <input value="@u.Id" name="userIds" type="checkbox">
+                                </td>
                             </tr>
                         }
                     </tbody>

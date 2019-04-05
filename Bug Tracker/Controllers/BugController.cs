@@ -140,25 +140,27 @@ namespace Bug_Tracker.Controllers
 
         [HttpPost]
         [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
-        public ActionResult CreateProject(string projectName)
+        public ActionResult CreateProject(CreateProjectViewModel model, List<string>userIds)
         {
+            var users = (from u in DbContext.Users
+                         where u != null
+                         select u).ToList();
+            var members = new List<ApplicationUser>();
+
             if (!ModelState.IsValid)
             {
-                var users = (from u in DbContext.Users
-                             where u != null
-                             select u).ToList();
-
-                var model = new CreateProjectViewModel()
-                {
-                    Users = users
-                };
-
                 return View(model);
+            }
+
+            foreach (var id in userIds)
+            {
+                members.Add(users.FirstOrDefault(u => u.Id == id));
             }
 
             var newProject = new Project()
             {
-                Name = projectName
+                Name = model.Name,
+                Users = members
             };
 
             DbContext.Projects.Add(newProject);
@@ -220,30 +222,13 @@ namespace Bug_Tracker.Controllers
             var projectToEdit = (from p in DbContext.Projects
                                  where p.Id == Id
                                  select p).FirstOrDefault();
-
-            var memberUsers = projectToEdit.Users;
-            var nonMemberUsers = new List<ApplicationUser>();
-            var allUsers = (from u in DbContext.Users
-                            where u != null
-                            select u).ToList();
-
-            foreach(var u in allUsers)
-            {
-                if (!memberUsers.Contains(u))
-                {
-                    nonMemberUsers.Add(u);
-                }
-            }
-
-
+          
             var model = new EditProjectViewModel()
             {
                 Id = projectToEdit.Id,
                 Name = projectToEdit.Name,
                 DateCreated = projectToEdit.DateCreated,
-                DateUpdated = projectToEdit.DateUpdated,
-                MemberUsers = memberUsers,
-                NonMemberUsers = nonMemberUsers
+                DateUpdated = projectToEdit.DateUpdated
             };
 
             return View(model);
@@ -268,6 +253,46 @@ namespace Bug_Tracker.Controllers
             DbContext.SaveChanges();
 
             return RedirectToAction("ViewMyProjects", "Bug");
+        }
+
+        [HttpGet]
+        [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
+        public ActionResult EditMembers(int? Id)
+        {
+            if (Id == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var project = (from p in DbContext.Projects
+                                 where p.Id == Id
+                                 select p).FirstOrDefault();
+
+            var memberUsers = project.Users;
+            var nonMemberUsers = new List<ApplicationUser>();
+            var allUsers = (from u in DbContext.Users
+                            where u != null
+                            select u).ToList();
+
+            foreach (var u in allUsers)
+            {
+                if (!memberUsers.Contains(u))
+                {
+                    nonMemberUsers.Add(u);
+                }
+            }
+
+            var model = new EditMembersViewModel()
+            {
+                Id = project.Id,
+                Name = project.Name,
+                DateCreated = project.DateCreated,
+                DateUpdated = project.DateUpdated,
+                MemberUsers = memberUsers,
+                NonMemberUsers = nonMemberUsers
+            };
+
+            return View(model);
         }
 
         [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
@@ -299,7 +324,7 @@ namespace Bug_Tracker.Controllers
                 }
             }
 
-            var model = new EditProjectViewModel()
+            var model = new EditMembersViewModel()
             {
                 Id= project.Id,
                 Name = project.Name,
@@ -309,7 +334,7 @@ namespace Bug_Tracker.Controllers
                 NonMemberUsers = nonMemberUsers
             };
 
-            return RedirectToAction("EditProject", "Bug", model);
+            return RedirectToAction("EditMembers", "Bug", model);
         }
 
         [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
@@ -341,7 +366,7 @@ namespace Bug_Tracker.Controllers
                 }
             }
 
-            var model = new EditProjectViewModel()
+            var model = new EditMembersViewModel()
             {
                 Id = project.Id,
                 Name = project.Name,
@@ -351,7 +376,7 @@ namespace Bug_Tracker.Controllers
                 NonMemberUsers = nonMemberUsers
             };
 
-            return RedirectToAction("EditProject", "Bug", model);
+            return RedirectToAction("EditMembers", "Bug", model);
         }
     }
 }
