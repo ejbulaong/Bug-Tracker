@@ -17,7 +17,7 @@ using System.Configuration;
 
 namespace Bug_Tracker
 {
-    public class EmailService : IIdentityMessageService
+    public class EmailServiceII : IIdentityMessageService
     {
         //Getting the settings from our private.config setup in web.config
         //private string SmtpHost = ConfigurationManager.
@@ -110,7 +110,7 @@ namespace Bug_Tracker
                 Subject = "Security Code",
                 BodyFormat = "Your security code is {0}"
             });
-            manager.EmailService = new EmailService();
+            manager.EmailService = new EmailServiceII();
             manager.SmsService = new SmsService();
             var dataProtectionProvider = options.DataProtectionProvider;
             if (dataProtectionProvider != null)
