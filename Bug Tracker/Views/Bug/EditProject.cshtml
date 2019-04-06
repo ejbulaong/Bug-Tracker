@@ -14,6 +14,7 @@
                     @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Name" })
                     @Html.ValidationSummary("", new { @class = "text-danger" })
                     <button type="submit" class="btn btn-primary">Submit</button>
+                    <a href="@Url.Action("Index","Bug")" class="btn btn-danger">Cancel</a>
                 </div>
             </div>
         </div>

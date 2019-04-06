@@ -4,4 +4,43 @@
 
 <h2>Dashboard</h2>
 
-
+<div class="container">
+    <div class="row">
+        <div class="col-2">
+            <a href="@Url.Action("ViewMyProjects","Bug")" title="My Projects">
+                <i class="fas fa-folder dashboard-icon" id="my-projects"></i>
+                <h5>My Projects</h5>
+            </a>
+        </div>
+        <div class="col-2">
+            <a href="@Url.Action("ViewAllProjects","Bug")" title="All Projects">
+                <i class="fas fa-folder dashboard-icon" id="all-projects"></i>
+                <h5>All Projects</h5>
+            </a>
+        </div>
+    </div>
+    <hr class="sidebar-divider">
+    <div class="row">
+        <div class="col-2">
+            <a href="#" title="My Tickets">
+                <i class="fas fa-fw fa-ticket-alt dashboard-icon" id="my-tickets"></i>
+                <h5>My Tickets</h5>
+            </a>
+        </div>
+        <div class="col-2">
+            <a href="#" title="All Tickets">
+                <i class="fas fa-fw fa-ticket-alt dashboard-icon" id="all-tickets"></i>
+                <h5>All Tickets</h5>
+            </a>
+        </div>
+    </div>
+    <hr class="sidebar-divider">
+    <div class="row">
+        <div class="col-2">
+            <a href="@Url.Action("ManageUsers","Bug")" title="Manage Users">
+                <i class="fas fa-users dashboard-icon" id="manage-users"></i>
+                <h5>Manage Users</h5>
+            </a>
+        </div>
+    </div>
+</div>

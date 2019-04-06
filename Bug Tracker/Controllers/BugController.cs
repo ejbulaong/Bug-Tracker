@@ -60,7 +60,7 @@ namespace Bug_Tracker.Controllers
         }    
 
         [HttpGet]
-        [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
+        [Authorize(Roles = nameof(UserRoles.Admin))]
         public ActionResult EditRoles(string userId)
         {
             if(userId == null)
@@ -85,7 +85,7 @@ namespace Bug_Tracker.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
+        [Authorize(Roles = nameof(UserRoles.Admin))]
         public ActionResult EditRoles(string userId, List<string> roles)
         {
             if (roles == null)
@@ -153,6 +153,11 @@ namespace Bug_Tracker.Controllers
                          where u != null
                          select u).ToList();
             var members = new List<ApplicationUser>();
+
+            if(userIds == null)
+            {
+                userIds = new List<string>();
+            }
 
             if (!ModelState.IsValid)
             {
@@ -259,7 +264,7 @@ namespace Bug_Tracker.Controllers
 
             DbContext.SaveChanges();
 
-            return RedirectToAction("ViewMyProjects", "Bug");
+            return RedirectToAction("ViewAllProjects", "Bug");
         }
 
         [HttpGet]

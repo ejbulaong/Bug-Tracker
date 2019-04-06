@@ -6,8 +6,8 @@
 
 <h2>Edit Roles</h2>
 
-<p>Name:@Model.Name</p>
-<p>Roles:</p>
+<h3>Name:@Model.Name</h3>
+<h4>Roles:</h4>
 <form method="post" action="@Url.Action("EditRoles","Bug",new {userId = @Model.Id})">
     <div class="form-check form-check-inline">
         @if (Model.Roles.Contains(nameof(UserRoles.Submitter)))

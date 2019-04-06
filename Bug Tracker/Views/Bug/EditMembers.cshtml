@@ -4,15 +4,15 @@
 }
 
 <h2>Edit Members</h2>
-
+<h4>Project Name: @Model.Name</h4>
 <div class="container">
     <div class="row">
         <div class="col-6">
             <div class="form-group">
-                <h6>Project Name: @Model.Name</h6>
+
             </div>
             <label>Members</label>
-            <table class="table table-striped">
+            <table class="table table-striped table-bordered">
                 <thead>
                     <tr>
                         <th>Name</th>
@@ -26,7 +26,7 @@
                         <tr>
                             <td>@u.Name</td>
                             <td>@u.Email</td>
-                            <td>
+                            <td class="td-center">
                                 <a href="@Url.Action("Unassign","Bug", new {projectId = Model.Id, userId = u.Id })">Unassign</a>
                             </td>
                         </tr>
@@ -36,7 +36,7 @@
         </div>
         <div class="col-6">
             <label>Non Members</label>
-            <table class="table table-striped">
+            <table class="table table-striped table-bordered">
                 <thead>
                     <tr>
                         <th>Name</th>
@@ -50,7 +50,7 @@
                         <tr>
                             <td>@u.Name</td>
                             <td>@u.Email</td>
-                            <td>
+                            <td class="td-center">
                                 <a href="@Url.Action("Assign","Bug", new {projectId = Model.Id, userId = u.Id })">Assign</a>
                             </td>
                         </tr>
