@@ -10,6 +10,6 @@ namespace Bug_Tracker.Enums
         Admin,
         ProjectManager,
         Developer,
-        Submitter
+        Submitter,
     }
 }

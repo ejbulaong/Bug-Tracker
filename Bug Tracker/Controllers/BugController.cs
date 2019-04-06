@@ -54,73 +54,80 @@ namespace Bug_Tracker.Controllers
                               where u.UserName == m.UserName
                               select u.Id).FirstOrDefault();
 
-                m.Role = userManager.GetRoles(userId);
+                m.Roles = userManager.GetRoles(userId);
             }
+            return View(model);
+        }    
+
+        [HttpGet]
+        [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
+        public ActionResult EditRoles(string userId)
+        {
+            if(userId == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            var userManager =
+                new UserManager<ApplicationUser>(
+                        new UserStore<ApplicationUser>(DbContext));
+
+            var userRoles = userManager.GetRoles(userId);
+
+
+            var model = (from u in DbContext.Users
+                        where u.Id == userId
+                        select new EditRolesViewModel {
+                            Id = u.Id,
+                            Name = u.Name,
+                            Roles = userRoles
+                        }).FirstOrDefault();
             return View(model);
         }
 
         [HttpPost]
-        [Authorize(Roles = nameof(UserRoles.Admin))]
-        public ActionResult ManageUsers(string id, string newRole)
+        [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
+        public ActionResult EditRoles(string userId, List<string> roles)
         {
-            if (id == null)
+            if (roles == null)
             {
-                return RedirectToAction("Index", "Home");
+                roles = new List<string>();
+                roles.Add(nameof(UserRoles.Submitter)); // setting Submitter as the default role for user if no role is chosen
             }
 
             var userManager =
                 new UserManager<ApplicationUser>(
                         new UserStore<ApplicationUser>(DbContext));
 
-            var user = (from u in DbContext.Users
-                        where u.Id == id
-                        select u).FirstOrDefault();
-            if (newRole != "none")
+            var userRoles = userManager.GetRoles(userId);
+
+            foreach (var role in userRoles)
             {
-                var currentRole = userManager.GetRoles(user.Id).FirstOrDefault();
-                userManager.RemoveFromRole(user.Id, currentRole);
+                userManager.RemoveFromRole(userId, role);
             }
 
-            if (newRole == nameof(UserRoles.Admin))
+            foreach (var role in roles)
             {
-                userManager.AddToRoles(user.Id, nameof(UserRoles.Admin));
+                userManager.AddToRoles(userId, role);
             }
-            else if (newRole == nameof(UserRoles.ProjectManager))
-            {
-                userManager.AddToRoles(user.Id, nameof(UserRoles.ProjectManager));
-            }
-            else if (newRole == nameof(UserRoles.Developer))
-            {
-                userManager.AddToRoles(user.Id, nameof(UserRoles.Developer));
-            }
-            else if (newRole == nameof(UserRoles.Submitter))
-            {
-                userManager.AddToRoles(user.Id, nameof(UserRoles.Submitter));
-            }
+
+            DbContext.SaveChanges();
 
             var model = new List<ManageUsersViewModel>();
 
-            foreach (var u in DbContext.Users)
+            foreach (var user in DbContext.Users)
             {
                 model.Add(
                     new ManageUsersViewModel
                     {
-                        Id = u.Id,
-                        Name = u.Name,
-                        UserName = u.Email
+                        Id = user.Id,
+                        Name = user.Name,
+                        UserName = user.Email
                     });
             }
 
-            foreach (var m in model)
-            {
-                var userId = (from u in DbContext.Users
-                              where u.UserName == m.UserName
-                              select u.Id).FirstOrDefault();
-
-                m.Role = userManager.GetRoles(userId);
-            }
-            return View(model);
+            return RedirectToAction("ManageUsers", "Bug", model);
         }
+
 
         [HttpGet]
         [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
@@ -378,5 +385,100 @@ namespace Bug_Tracker.Controllers
 
             return RedirectToAction("EditMembers", "Bug", model);
         }
+
+        //[HttpGet]
+        //[Authorize(Roles = nameof(UserRoles.Admin))]
+        //public ActionResult ManageUsers()
+        //{
+        //    var userManager =
+        //        new UserManager<ApplicationUser>(
+        //                new UserStore<ApplicationUser>(DbContext));
+
+        //    var model = new List<ManageUsersViewModel>();
+
+        //    foreach (var user in DbContext.Users)
+        //    {
+        //        model.Add(
+        //            new ManageUsersViewModel
+        //            {
+        //                Id = user.Id,
+        //                Name = user.Name,
+        //                UserName = user.Email
+        //            });
+        //    }
+
+        //    foreach (var m in model)
+        //    {
+        //        var userId = (from u in DbContext.Users
+        //                      where u.UserName == m.UserName
+        //                      select u.Id).FirstOrDefault();
+
+        //        m.Role = userManager.GetRoles(userId);
+        //    }
+        //    return View(model);
+        //}
+
+        //[HttpPost]
+        //[Authorize(Roles = nameof(UserRoles.Admin))]
+        //public ActionResult ManageUsers(string id, string newRole)
+        //{
+        //    if (id == null)
+        //    {
+        //        return RedirectToAction("Index", "Home");
+        //    }
+
+        //    var userManager =
+        //        new UserManager<ApplicationUser>(
+        //                new UserStore<ApplicationUser>(DbContext));
+
+        //    var user = (from u in DbContext.Users
+        //                where u.Id == id
+        //                select u).FirstOrDefault();
+        //    if (newRole != "none")
+        //    {
+        //        var currentRole = userManager.GetRoles(user.Id).FirstOrDefault();
+        //        userManager.RemoveFromRole(user.Id, currentRole);
+        //    }
+
+        //    if (newRole == nameof(UserRoles.Admin))
+        //    {
+        //        userManager.AddToRoles(user.Id, nameof(UserRoles.Admin));
+        //    }
+        //    else if (newRole == nameof(UserRoles.ProjectManager))
+        //    {
+        //        userManager.AddToRoles(user.Id, nameof(UserRoles.ProjectManager));
+        //    }
+        //    else if (newRole == nameof(UserRoles.Developer))
+        //    {
+        //        userManager.AddToRoles(user.Id, nameof(UserRoles.Developer));
+        //    }
+        //    else if (newRole == nameof(UserRoles.Submitter))
+        //    {
+        //        userManager.AddToRoles(user.Id, nameof(UserRoles.Submitter));
+        //    }
+
+        //    var model = new List<ManageUsersViewModel>();
+
+        //    foreach (var u in DbContext.Users)
+        //    {
+        //        model.Add(
+        //            new ManageUsersViewModel
+        //            {
+        //                Id = u.Id,
+        //                Name = u.Name,
+        //                UserName = u.Email
+        //            });
+        //    }
+
+        //    foreach (var m in model)
+        //    {
+        //        var userId = (from u in DbContext.Users
+        //                      where u.UserName == m.UserName
+        //                      select u.Id).FirstOrDefault();
+
+        //        m.Role = userManager.GetRoles(userId);
+        //    }
+        //    return View(model);
+        //}
     }
 }

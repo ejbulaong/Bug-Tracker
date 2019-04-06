@@ -1,0 +1,61 @@
+﻿@model EditRolesViewModel
+@{
+    ViewBag.Title = "EditRoles";
+}
+@using Bug_Tracker.Enums;
+
+<h2>Edit Roles</h2>
+
+<p>Name:@Model.Name</p>
+<p>Roles:</p>
+<form method="post" action="@Url.Action("EditRoles","Bug",new {userId = @Model.Id})">
+    <div class="form-check form-check-inline">
+        @if (Model.Roles.Contains(nameof(UserRoles.Submitter)))
+        {
+            <input class="form-check-input" type="checkbox" id="inlineCheckbox1" name ="roles" value="@nameof(UserRoles.Submitter)" checked>
+        }
+        else
+        {
+            <input class="form-check-input" type="checkbox" id="inlineCheckbox1" name ="roles" value="@nameof(UserRoles.Submitter)">
+        }
+        <label class="form-check-label" for="inlineCheckbox1">Submitter</label>
+    </div>
+
+    <div class="form-check form-check-inline">
+        @if (Model.Roles.Contains(nameof(UserRoles.Developer)))
+        {
+            <input class="form-check-input" type="checkbox" id="inlineCheckbox1" name ="roles" value="@nameof(UserRoles.Developer)" checked>
+        }
+        else
+        {
+            <input class="form-check-input" type="checkbox" id="inlineCheckbox1" name ="roles" value="@nameof(UserRoles.Developer)">
+        }
+
+        <label class="form-check-label" for="inlineCheckbox1">Developer</label>
+    </div>
+
+    <div class="form-check form-check-inline">
+        @if (Model.Roles.Contains(nameof(UserRoles.ProjectManager)))
+        {
+            <input class="form-check-input" type="checkbox" id="inlineCheckbox1" name ="roles" value="@nameof(UserRoles.ProjectManager)" checked>
+        }
+        else
+        {
+            <input class="form-check-input" type="checkbox" id="inlineCheckbox1" name ="roles" value="@nameof(UserRoles.ProjectManager)">
+        }
+        <label class="form-check-label" for="inlineCheckbox1">Program Manager</label>
+    </div>
+
+    <div class="form-check form-check-inline">
+        @if (Model.Roles.Contains(nameof(UserRoles.Admin)))
+        {
+            <input class="form-check-input" type="checkbox" id="inlineCheckbox1" name ="roles" value="@nameof(UserRoles.Admin)" checked>
+        }
+        else
+        {
+            <input class="form-check-input" type="checkbox" id="inlineCheckbox1" name ="roles" value="@nameof(UserRoles.Admin)">
+        }
+        <label class="form-check-label" for="inlineCheckbox1">Admin</label>
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>

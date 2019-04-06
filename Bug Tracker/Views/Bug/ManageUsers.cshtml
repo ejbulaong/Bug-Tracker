@@ -18,36 +18,55 @@
                     <tr>
                         <th>Name</th>
                         <th>Email</th>
-                        <th>Current Role</th>
-                        <th>Choose a new Role</th>
+                        <th>Submitter</th>
+                        <th>Developer</th>
+                        <th>Program Manager</th>
+                        <th>Admin</th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var m in Model)
                     {
-                        <form method="post" enctype="multipart/form-data" action="@Url.Action("ManageUsers","Bug",new { id = m.Id})">
-                            <tr>
-                                <td>@m.Name</td>
-                                <td>@m.UserName</td>
-                                @foreach (var r in m.Role)
-                                {
-                                    <td>@r</td>
-                                }
-                                <td>
-                                    <select class="form-control form-control-sm" name="newRole">
-                                        <option value="none" selected>Please choose a role</option>
-                                        <option>@nameof(UserRoles.Admin)</option>
-                                        <option>@nameof(UserRoles.ProjectManager)</option>
-                                        <option>@nameof(UserRoles.Developer)</option>
-                                        <option>@nameof(UserRoles.Submitter)</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <button type="submit" class="btn btn-primary">Save</button>
-                                </td>
-                            </tr>
-                        </form>
+                        <tr>
+                            <td>@m.Name</td>
+                            <td>@m.UserName</td>
+                            @if (m.Roles.Contains(nameof(UserRoles.Submitter)))
+                            {
+                                <td><i class="fas fa-check"></i></td>
+                            }
+                            else
+                            {
+                                <td><i class="fas fa-times"></i></td>
+                            }
+                            @if (m.Roles.Contains(nameof(UserRoles.Developer)))
+                            {
+                                <td><i class="fas fa-check"></i></td>
+                            }
+                            else
+                            {
+                                <td><i class="fas fa-times"></i></td>
+                            }
+                            @if (m.Roles.Contains(nameof(UserRoles.ProjectManager)))
+                            {
+                                <td><i class="fas fa-check"></i></td>
+                            }
+                            else
+                            {
+                                <td><i class="fas fa-times"></i></td>
+                            }
+                            @if (m.Roles.Contains(nameof(UserRoles.Admin)))
+                            {
+                                <td><i class="fas fa-check"></i></td>
+                            }
+                            else
+                            {
+                                <td><i class="fas fa-times"></i></td>
+                            }
+                            <td>
+                                <a href="@Url.Action("EditRoles","Bug", new {userId = m.Id })">Edit Roles</a>
+                            </td>
+                        </tr>
                     }
                 </tbody>
             </table>

@@ -10,6 +10,7 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Bug_Tracker.Models;
 using Microsoft.AspNet.Identity.EntityFramework;
+using Bug_Tracker.Enums;
 
 namespace Bug_Tracker.Controllers
 {
@@ -164,14 +165,14 @@ namespace Bug_Tracker.Controllers
 
                 var user = new ApplicationUser {Name = model.Name, UserName = model.Email, Email = model.Email };
 
-                if (!context.Roles.Any(p => p.Name == "Submitter"))
+                if (!context.Roles.Any(p => p.Name == nameof(UserRoles.Submitter)))
                 {
-                    var moderatorRole = new IdentityRole("Submitter");
+                    var moderatorRole = new IdentityRole(nameof(UserRoles.Submitter));
                     roleManager.Create(moderatorRole);
                 }
 
                 var result = await UserManager.CreateAsync(user, model.Password);
-                userManager.AddToRole(user.Id, "Submitter");
+                userManager.AddToRole(user.Id, nameof(UserRoles.Submitter));
                 if (result.Succeeded)
                 {
                     await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
