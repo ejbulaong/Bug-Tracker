@@ -172,6 +172,7 @@ namespace Bug_Tracker.Controllers
             var newProject = new Project()
             {
                 Name = model.Name,
+                Details = model.Details,
                 Users = members
             };
 
@@ -239,6 +240,7 @@ namespace Bug_Tracker.Controllers
             {
                 Id = projectToEdit.Id,
                 Name = projectToEdit.Name,
+                Details = projectToEdit.Details,
                 DateCreated = projectToEdit.DateCreated,
                 DateUpdated = projectToEdit.DateUpdated
             };
@@ -260,6 +262,7 @@ namespace Bug_Tracker.Controllers
                                  select p).FirstOrDefault();
 
             projectToEdit.Name = model.Name;
+            projectToEdit.Details = model.Details;
             projectToEdit.DateUpdated = DateTime.Now;
 
             DbContext.SaveChanges();
@@ -391,99 +394,29 @@ namespace Bug_Tracker.Controllers
             return RedirectToAction("EditMembers", "Bug", model);
         }
 
-        //[HttpGet]
-        //[Authorize(Roles = nameof(UserRoles.Admin))]
-        //public ActionResult ManageUsers()
-        //{
-        //    var userManager =
-        //        new UserManager<ApplicationUser>(
-        //                new UserStore<ApplicationUser>(DbContext));
+        [HttpGet]
+        [Authorize]
+        public ActionResult ProjectDetails(int? projectId)
+        {
+            if(projectId == null)
+            {
+                return RedirectToAction("Index","Home");
+            }
 
-        //    var model = new List<ManageUsersViewModel>();
+            var project = (from p in DbContext.Projects
+                           where p.Id == projectId
+                           select p).FirstOrDefault();
 
-        //    foreach (var user in DbContext.Users)
-        //    {
-        //        model.Add(
-        //            new ManageUsersViewModel
-        //            {
-        //                Id = user.Id,
-        //                Name = user.Name,
-        //                UserName = user.Email
-        //            });
-        //    }
-
-        //    foreach (var m in model)
-        //    {
-        //        var userId = (from u in DbContext.Users
-        //                      where u.UserName == m.UserName
-        //                      select u.Id).FirstOrDefault();
-
-        //        m.Role = userManager.GetRoles(userId);
-        //    }
-        //    return View(model);
-        //}
-
-        //[HttpPost]
-        //[Authorize(Roles = nameof(UserRoles.Admin))]
-        //public ActionResult ManageUsers(string id, string newRole)
-        //{
-        //    if (id == null)
-        //    {
-        //        return RedirectToAction("Index", "Home");
-        //    }
-
-        //    var userManager =
-        //        new UserManager<ApplicationUser>(
-        //                new UserStore<ApplicationUser>(DbContext));
-
-        //    var user = (from u in DbContext.Users
-        //                where u.Id == id
-        //                select u).FirstOrDefault();
-        //    if (newRole != "none")
-        //    {
-        //        var currentRole = userManager.GetRoles(user.Id).FirstOrDefault();
-        //        userManager.RemoveFromRole(user.Id, currentRole);
-        //    }
-
-        //    if (newRole == nameof(UserRoles.Admin))
-        //    {
-        //        userManager.AddToRoles(user.Id, nameof(UserRoles.Admin));
-        //    }
-        //    else if (newRole == nameof(UserRoles.ProjectManager))
-        //    {
-        //        userManager.AddToRoles(user.Id, nameof(UserRoles.ProjectManager));
-        //    }
-        //    else if (newRole == nameof(UserRoles.Developer))
-        //    {
-        //        userManager.AddToRoles(user.Id, nameof(UserRoles.Developer));
-        //    }
-        //    else if (newRole == nameof(UserRoles.Submitter))
-        //    {
-        //        userManager.AddToRoles(user.Id, nameof(UserRoles.Submitter));
-        //    }
-
-        //    var model = new List<ManageUsersViewModel>();
-
-        //    foreach (var u in DbContext.Users)
-        //    {
-        //        model.Add(
-        //            new ManageUsersViewModel
-        //            {
-        //                Id = u.Id,
-        //                Name = u.Name,
-        //                UserName = u.Email
-        //            });
-        //    }
-
-        //    foreach (var m in model)
-        //    {
-        //        var userId = (from u in DbContext.Users
-        //                      where u.UserName == m.UserName
-        //                      select u.Id).FirstOrDefault();
-
-        //        m.Role = userManager.GetRoles(userId);
-        //    }
-        //    return View(model);
-        //}
+            var model = new ProjectDetailsViewModel()
+            {
+                Id = project.Id,
+                Name = project.Name,
+                Details = project.Details,
+                DateCreated = project.DateCreated,
+                DateUpdated = project.DateUpdated,
+                Users = project.Users
+            };
+            return View(model);
+        }
     }
 }

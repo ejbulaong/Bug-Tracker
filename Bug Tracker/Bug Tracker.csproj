@@ -194,6 +194,7 @@
     <Compile Include="Models\ViewModels\EditProjectViewModel.cs" />
     <Compile Include="Models\ViewModels\EditRolesViewModel.cs" />
     <Compile Include="Models\ViewModels\ManageUsersViewModel.cs" />
+    <Compile Include="Models\ViewModels\ProjectDetailsViewModel.cs" />
     <Compile Include="Models\ViewModels\ViewAllProjectsViewModel.cs" />
     <Compile Include="Models\ViewModels\ViewMyProjectsViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -2051,6 +2052,7 @@
     <Content Include="Views\Bug\EditProject.cshtml" />
     <Content Include="Views\Bug\EditMembers.cshtml" />
     <Content Include="Views\Bug\EditRoles.cshtml" />
+    <Content Include="Views\Bug\ProjectDetails.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

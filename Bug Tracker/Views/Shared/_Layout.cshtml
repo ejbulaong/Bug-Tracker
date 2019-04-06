@@ -57,13 +57,21 @@
                         <h6 class="collapse-header">Projects:</h6>
                         @if (User.IsInRole(nameof(UserRoles.Admin)) || User.IsInRole(nameof(UserRoles.ProjectManager)))
                         {
-                            <a class="collapse-item" href="@Url.Action("CreateProject","Bug")">Create Project</a>
+                            <a class="collapse-item" href="@Url.Action("CreateProject","Bug")">
+                                <i class="fas fa-plus"></i>
+                                Create Project
+                            </a>
                         }
-
-                        <a class="collapse-item" href="@Url.Action("ViewMyProjects","Bug")">My Projects</a>
+                        <a class="collapse-item" href="@Url.Action("ViewMyProjects","Bug")">
+                            <i class="fas fa-folder"></i>
+                            My Projects
+                        </a>
                         @if (User.IsInRole(nameof(UserRoles.Admin)) || User.IsInRole(nameof(UserRoles.ProjectManager)))
                         {
-                            <a class="collapse-item" href="@Url.Action("ViewAllProjects", "Bug")">All Projects</a>
+                            <a class="collapse-item" href="@Url.Action("ViewAllProjects", "Bug")">
+                                <i class="fas fa-folder"></i>
+                                All Projects
+                            </a>
                         }
                     </div>
                 </div>

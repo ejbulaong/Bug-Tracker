@@ -5,13 +5,19 @@
 
 <h2>Create Project</h2>
 <form method="post" action="@Url.Action("CreateProject","Bug")">
+    @Html.ValidationSummary("", new { @class = "text-danger" })
     <div class="container">
         <div class="row">
             <div class="col-4">
                 <div class="form-group">
-                    @Html.LabelFor(m => m.Name, "Project Name:")
-                    @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Name" })
-                    @Html.ValidationSummary("", new { @class = "text-danger" })
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Name, "Project Name:")
+                        @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Name" })
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Details, "Project Details:")
+                        @Html.TextAreaFor(m => m.Details, new { @class = "form-control", placeholder = "Details" })
+                    </div>
                     <button type="submit" class="btn btn-primary">Save</button>
                     <a href="@Url.Action("Index","Home")" class="btn btn-danger">Cancel</a>
                 </div>

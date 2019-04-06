@@ -11,6 +11,8 @@ namespace Bug_Tracker.Models.ViewModels
         public int Id { get; set; }
         [Required]
         public string Name { get; set; }
+        [Required]
+        public string Details { get; set; }
         public DateTime DateCreated { get; set; }
         public DateTime? DateUpdated { get; set; }
     }

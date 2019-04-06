@@ -9,6 +9,7 @@ namespace Bug_Tracker.Models.Domain
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        public string Details { get; set; }
         public DateTime DateCreated { get; set; }
         public DateTime? DateUpdated { get; set; }
 

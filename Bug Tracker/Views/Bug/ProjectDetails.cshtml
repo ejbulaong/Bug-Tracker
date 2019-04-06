@@ -1,0 +1,38 @@
+﻿@model ProjectDetailsViewModel
+@{
+    ViewBag.Title = "ProjectDetails";
+}
+
+<h2>ProjectDetails</h2>
+<div class="container">
+    <div class="row">
+        <div class="col-6">
+            <div class="card" style="width: 100%">
+                <div class="card-body">
+                    <h5 class="card-title">Project Name: @Model.Name</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Details</h6>
+                    <p class="card-text">@Model.Details</p>
+                    <a href="@Url.Action("EditProject","Bug",new {id=Model.Id })" title="Edit Project">
+                        Edit Project
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="card" style="width: 100%">
+                <div class="card-body">
+                    <h5 class="card-title">Members</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Total: @Model.Users.Count </h6>
+                    @foreach (var u in Model.Users)
+                    {
+                        <p class="card-text">@u.Name</p>
+                    }
+                    <a href="@Url.Action("EditMembers","Bug",new {id=@Model.Id })" title="Edit Members">
+                        Edit Members
+                    </a>
+                </div>
+            </div>
+        </div>
+</div>
+
+
