@@ -12,12 +12,15 @@
                 <h5>My Projects</h5>
             </a>
         </div>
-        <div class="col-2">
-            <a href="@Url.Action("ViewAllProjects","Bug")" title="All Projects">
-                <i class="fas fa-folder dashboard-icon" id="all-projects"></i>
-                <h5>All Projects</h5>
-            </a>
-        </div>
+        @if (User.IsInRole(nameof(UserRoles.Admin)) || User.IsInRole(nameof(UserRoles.ProjectManager)))
+        {
+            <div class="col-2">
+                <a href="@Url.Action("ViewAllProjects","Bug")" title="All Projects">
+                    <i class="fas fa-folder dashboard-icon" id="all-projects"></i>
+                    <h5>All Projects</h5>
+                </a>
+            </div>
+        }
     </div>
     <hr class="sidebar-divider">
     <div class="row">
@@ -27,14 +30,19 @@
                 <h5>My Tickets</h5>
             </a>
         </div>
-        <div class="col-2">
-            <a href="#" title="All Tickets">
-                <i class="fas fa-fw fa-ticket-alt dashboard-icon" id="all-tickets"></i>
-                <h5>All Tickets</h5>
-            </a>
-        </div>
+        @if (User.IsInRole(nameof(UserRoles.Admin)) || User.IsInRole(nameof(UserRoles.ProjectManager)))
+        {
+            <div class="col-2">
+                <a href="#" title="All Tickets">
+                    <i class="fas fa-fw fa-ticket-alt dashboard-icon" id="all-tickets"></i>
+                    <h5>All Tickets</h5>
+                </a>
+            </div>
+        }
     </div>
     <hr class="sidebar-divider">
+    @if(User.IsInRole(nameof(UserRoles.Admin)))
+    {
     <div class="row">
         <div class="col-2">
             <a href="@Url.Action("ManageUsers","Bug")" title="Manage Users">
@@ -43,4 +51,5 @@
             </a>
         </div>
     </div>
+    }
 </div>

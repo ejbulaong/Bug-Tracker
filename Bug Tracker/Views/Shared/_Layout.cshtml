@@ -55,9 +55,16 @@
                 <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <h6 class="collapse-header">Projects:</h6>
-                        <a class="collapse-item" href="@Url.Action("CreateProject","Bug")">Create Project</a>
+                        @if (User.IsInRole(nameof(UserRoles.Admin)) || User.IsInRole(nameof(UserRoles.ProjectManager)))
+                        {
+                            <a class="collapse-item" href="@Url.Action("CreateProject","Bug")">Create Project</a>
+                        }
+
                         <a class="collapse-item" href="@Url.Action("ViewMyProjects","Bug")">My Projects</a>
-                        <a class="collapse-item" href="@Url.Action("ViewAllProjects","Bug")">All Projects</a>
+                        @if (User.IsInRole(nameof(UserRoles.Admin)) || User.IsInRole(nameof(UserRoles.ProjectManager)))
+                        {
+                            <a class="collapse-item" href="@Url.Action("ViewAllProjects", "Bug")">All Projects</a>
+                        }
                     </div>
                 </div>
             </li>
@@ -77,13 +84,15 @@
             </li>
 
             <!-- Nav Item - Charts -->
-            <li class="nav-item">
-                <a class="nav-link" href="@Url.Action("ManageUsers","Bug")">
-                    <i class="fas fa-fw fa-users"></i>
-                    <span>Manage Users</span>
-                </a>
-            </li>
-
+            @if (User.IsInRole(nameof(UserRoles.Admin)))
+            {
+                <li class="nav-item">
+                    <a class="nav-link" href="@Url.Action("ManageUsers", "Bug")">
+                        <i class="fas fa-fw fa-users"></i>
+                        <span>Manage Users</span>
+                    </a>
+                </li>
+            }
             <!-- Divider -->
             <hr class="sidebar-divider">
         </ul>
@@ -99,7 +108,7 @@
                     <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
                         <i class="fa fa-bars"></i>
                     </button>
-                   
+
                     <!-- Topbar Navbar -->
                     <ul class="navbar-nav ml-auto">
                         <!-- Nav Item - Search Dropdown (Visible Only XS) -->

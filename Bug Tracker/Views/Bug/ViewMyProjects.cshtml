@@ -8,12 +8,15 @@
 
 <!-- DataTales Example -->
 <div class="card shadow mb-4">
-    <div class="card-header py-3">
-        <a href="@Url.Action("CreateProject","Bug")" title="Create New Project">
-            <i class="fas fa-plus"></i>
-            Create New Project
-        </a>
-    </div>
+    @if (User.IsInRole(nameof(UserRoles.Admin)) || User.IsInRole(nameof(UserRoles.ProjectManager)))
+    {
+        <div class="card-header py-3">
+            <a href="@Url.Action("CreateProject", "Bug")" title="Create New Project">
+                <i class="fas fa-plus"></i>
+                Create New Project
+            </a>
+        </div>
+    }
     <div class="card-body">
         <div class="table-responsive">
             <table class="table table-striped table-bordered" id="dataTable" width="100%" cellspacing="0">
@@ -24,8 +27,11 @@
                         <th>Tickets</th>
                         <th>Date Created</th>
                         <th>Date Updated</th>
-                        <th></th>
-                        <th></th>
+                        @if (User.IsInRole(nameof(UserRoles.Admin)) || User.IsInRole(nameof(UserRoles.ProjectManager)))
+                        {
+                            <th></th>
+                            <th></th>
+                        }
                     </tr>
                 </thead>
                 <tbody>
@@ -44,16 +50,19 @@
                             {
                                 <td>@m.DateUpdated</td>
                             }
-                            <td class="td-center">
-                                <a href="@Url.Action("EditMembers","Bug",new {id=m.Id })" title="Edit Members">
-                                    <i class="fas fa-user-friends"></i>
-                                </a>
-                            </td>
-                            <td class="td-center">
-                                <a href="@Url.Action("EditProject","Bug",new {id=m.Id })" title="Edit Project">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                            </td>
+                            @if (User.IsInRole(nameof(UserRoles.Admin)) || User.IsInRole(nameof(UserRoles.ProjectManager)))
+                            {
+                                <td class="td-center">
+                                    <a href="@Url.Action("EditMembers", "Bug", new { id = m.Id })" title="Edit Members">
+                                        <i class="fas fa-user-friends"></i>
+                                    </a>
+                                </td>
+                                <td class="td-center">
+                                    <a href="@Url.Action("EditProject", "Bug", new { id = m.Id })" title="Edit Project">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                </td>
+                            }
                         </tr>
                     }
                 </tbody>
