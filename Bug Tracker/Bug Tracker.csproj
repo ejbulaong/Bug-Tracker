@@ -179,6 +179,9 @@
     <Compile Include="Controllers\BugController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Enums\EnumTicketPriorities.cs" />
+    <Compile Include="Enums\EnumTicketStatuses.cs" />
+    <Compile Include="Enums\EnumTicketTypes.cs" />
     <Compile Include="Enums\UserRoles.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -186,6 +189,10 @@
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Domain\Project.cs" />
+    <Compile Include="Models\Domain\Ticket.cs" />
+    <Compile Include="Models\Domain\TicketPriority.cs" />
+    <Compile Include="Models\Domain\TicketStatus.cs" />
+    <Compile Include="Models\Domain\TicketType.cs" />
     <Compile Include="Models\EmailService.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />

@@ -10,7 +10,7 @@ using System.Web;
 
 namespace Bug_Tracker.Models
 {
-    public class EmailService2 : IIdentityMessageService
+    public class EmailService : IIdentityMessageService
     {
         //Getting the settings from our private.config setup in web.config
         private string SmtpHost = ConfigurationManager.

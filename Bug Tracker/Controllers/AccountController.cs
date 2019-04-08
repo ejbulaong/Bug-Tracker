@@ -153,28 +153,15 @@ namespace Bug_Tracker.Controllers
         {
             if (ModelState.IsValid)
             {
-                ApplicationDbContext context = new ApplicationDbContext();
-
-                var roleManager =
-                    new RoleManager<IdentityRole>(
-                        new RoleStore<Microsoft.AspNet.Identity.EntityFramework.IdentityRole>(context));
-
-                var userManager =
-                    new UserManager<ApplicationUser>(
-                            new UserStore<ApplicationUser>(context));
-
                 var user = new ApplicationUser {Name = model.Name, UserName = model.Email, Email = model.Email };
 
-                if (!context.Roles.Any(p => p.Name == nameof(UserRoles.Submitter)))
-                {
-                    var moderatorRole = new IdentityRole(nameof(UserRoles.Submitter));
-                    roleManager.Create(moderatorRole);
-                }
-
                 var result = await UserManager.CreateAsync(user, model.Password);
-                userManager.AddToRole(user.Id, nameof(UserRoles.Submitter));
+
+                UserManager.AddToRole(user.Id, nameof(UserRoles.Submitter));
                 if (result.Succeeded)
                 {
+                    UserManager.AddToRole(user.Id, nameof(UserRoles.Submitter));
+
                     await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
 
                     // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771

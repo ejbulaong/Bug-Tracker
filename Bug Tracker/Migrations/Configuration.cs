@@ -2,6 +2,7 @@ namespace Bug_Tracker.Migrations
 {
     using Bug_Tracker.Enums;
     using Bug_Tracker.Models;
+    using Bug_Tracker.Models.Domain;
     using Microsoft.AspNet.Identity;
     using Microsoft.AspNet.Identity.EntityFramework;
     using System;
@@ -81,6 +82,72 @@ namespace Bug_Tracker.Migrations
             {
                 userManager.AddToRole(adminUser.Id, nameof(UserRoles.Admin));
             }
+
+            //Creating Ticket Types
+            if (!context.TicketTypes.Any(p => p.Name == nameof(EnumTicketTypes.Bug)))
+            {
+                var bugType = new TicketType(nameof(EnumTicketTypes.Bug));
+                context.TicketTypes.Add(bugType);
+
+            }
+
+            if (!context.TicketTypes.Any(p => p.Name == nameof(EnumTicketTypes.Feature)))
+            {
+                var featureType = new TicketType(nameof(EnumTicketTypes.Feature));
+                context.TicketTypes.Add(featureType);
+            }
+
+            if (!context.TicketTypes.Any(p => p.Name == nameof(EnumTicketTypes.Database)))
+            {
+                var databaseType = new TicketType(nameof(EnumTicketTypes.Database));
+                context.TicketTypes.Add(databaseType);
+            }
+
+            if (!context.TicketTypes.Any(p => p.Name == nameof(EnumTicketTypes.Support)))
+            {
+                var supportType = new TicketType(nameof(EnumTicketTypes.Support));
+                context.TicketTypes.Add(supportType);
+            }
+
+            //Creating Ticket Priorities
+            if (!context.TicketPriorities.Any(p => p.Name == nameof(EnumTicketPriorities.Low)))
+            {
+                var low = new TicketPriority(nameof(EnumTicketPriorities.Low));
+                context.TicketPriorities.Add(low);
+            }
+
+            if (!context.TicketPriorities.Any(p => p.Name == nameof(EnumTicketPriorities.Medium)))
+            {
+                var medium = new TicketPriority(nameof(EnumTicketPriorities.Medium));
+                context.TicketPriorities.Add(medium);
+            }
+
+            if (!context.TicketPriorities.Any(p => p.Name == nameof(EnumTicketPriorities.High)))
+            {
+                var high = new TicketPriority(nameof(EnumTicketPriorities.High));
+                context.TicketPriorities.Add(high);
+            }
+
+            //Creating Ticket Status
+            if (!context.TicketStatuses.Any(p => p.Name == nameof(EnumTicketStatuses.Open)))
+            {
+                var open = new TicketStatus(nameof(EnumTicketStatuses.Open));
+                context.TicketStatuses.Add(open);
+            }
+
+            if (!context.TicketStatuses.Any(p => p.Name == nameof(EnumTicketStatuses.Resolved)))
+            {
+                var resolved = new TicketStatus(nameof(EnumTicketStatuses.Resolved));
+                context.TicketStatuses.Add(resolved);
+            }
+
+            if (!context.TicketStatuses.Any(p => p.Name == nameof(EnumTicketStatuses.Rejected)))
+            {
+                var rejected = new TicketStatus(nameof(EnumTicketStatuses.Rejected));
+                context.TicketStatuses.Add(rejected);
+            }
+
+            context.SaveChanges();
         }
     }
 }
