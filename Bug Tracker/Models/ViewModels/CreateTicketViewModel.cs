@@ -22,8 +22,6 @@ namespace Bug_Tracker.Models.ViewModels
         public int TypeId { get; set; }
         [Required(ErrorMessage ="The Priority field is required.")]
         public int PriorityId { get; set; }
-        [Required(ErrorMessage = "The Status field is required.")]
-        public int StatusId { get; set; }
         public ApplicationUser Creator { get; set; }
         public ApplicationUser AssignedDeveloper { get; set; }
 

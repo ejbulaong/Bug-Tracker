@@ -44,14 +44,6 @@
                         </div>
 
                         <div class="form-group">
-                            @Html.LabelFor(m => m.Statuses, "Status:")
-                            @Html.DropDownListFor(
-                            p => p.StatusId,
-                            new SelectList(Model.Statuses, "ID", "Name"),
-                            "-- Please select a status --",new {@class="form-control" })
-                        </div>
-
-                        <div class="form-group">
                             @Html.LabelFor(m => m.Priorities, "Priority:")
                             @Html.DropDownListFor(
                             p => p.PriorityId,

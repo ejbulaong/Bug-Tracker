@@ -24,7 +24,7 @@ namespace Bug_Tracker.Controllers
 
         public ActionResult Index()
         {
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction(nameof(HomeController.Index), nameof(HomeController));
         }
 
         [HttpGet]
@@ -65,7 +65,7 @@ namespace Bug_Tracker.Controllers
         {
             if (userId == null)
             {
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction(nameof(HomeController.Index), nameof(HomeController));
             }
             var userManager =
                 new UserManager<ApplicationUser>(
@@ -126,7 +126,7 @@ namespace Bug_Tracker.Controllers
                     });
             }
 
-            return RedirectToAction("ManageUsers", "Bug", model);
+            return RedirectToAction(nameof(BugController.ManageUsers), nameof(BugController), model);
         }
 
 
@@ -180,7 +180,7 @@ namespace Bug_Tracker.Controllers
             DbContext.Projects.Add(newProject);
             DbContext.SaveChanges();
 
-            return RedirectToAction("ViewAllProjects", "Bug");
+            return RedirectToAction(nameof(BugController.ViewAllProjects), nameof(BugController));
         }
 
         [HttpGet]
@@ -230,7 +230,7 @@ namespace Bug_Tracker.Controllers
         {
             if (Id == null)
             {
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction(nameof(HomeController.Index), nameof(HomeController));
             }
 
             var projectToEdit = (from p in DbContext.Projects
@@ -268,7 +268,7 @@ namespace Bug_Tracker.Controllers
 
             DbContext.SaveChanges();
 
-            return RedirectToAction("ViewAllProjects", "Bug");
+            return RedirectToAction(nameof(BugController.ViewAllProjects), nameof(BugController));
         }
 
         [HttpGet]
@@ -277,7 +277,7 @@ namespace Bug_Tracker.Controllers
         {
             if (Id == null)
             {
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction(nameof(HomeController.Index), nameof(HomeController));
             }
 
             var project = (from p in DbContext.Projects
@@ -350,7 +350,7 @@ namespace Bug_Tracker.Controllers
                 NonMemberUsers = nonMemberUsers
             };
 
-            return RedirectToAction("EditMembers", "Bug", model);
+            return RedirectToAction(nameof(BugController.EditMembers), nameof(BugController), model);
         }
 
         [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
@@ -392,7 +392,7 @@ namespace Bug_Tracker.Controllers
                 NonMemberUsers = nonMemberUsers
             };
 
-            return RedirectToAction("EditMembers", "Bug", model);
+            return RedirectToAction(nameof(BugController.EditMembers), nameof(BugController), model);
         }
 
         [HttpGet]
@@ -401,7 +401,7 @@ namespace Bug_Tracker.Controllers
         {
             if (projectId == null)
             {
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction(nameof(HomeController.Index), nameof(HomeController));
             }
 
             var project = (from p in DbContext.Projects
@@ -454,7 +454,7 @@ namespace Bug_Tracker.Controllers
         [Authorize(Roles = nameof(UserRoles.Submitter))]
         public ActionResult CreateTicket(CreateTicketViewModel model)
         {
-            if (!ModelState.IsValid )
+            if (!ModelState.IsValid)
             {
                 return View(model);
             }
@@ -462,7 +462,7 @@ namespace Bug_Tracker.Controllers
             var userId = User.Identity.GetUserId();
             var user = DbContext.Users.FirstOrDefault(u => u.Id == userId);
             var type = DbContext.TicketTypes.FirstOrDefault(t => t.Id == model.TypeId);
-            var status = DbContext.TicketStatuses.FirstOrDefault(s => s.Id == model.StatusId);
+            var status = DbContext.TicketStatuses.FirstOrDefault(s => s.Name == nameof(EnumTicketStatuses.Open).ToString());
             var priority = DbContext.TicketPriorities.FirstOrDefault(p => p.Id == model.PriorityId);
             var project = DbContext.Projects.FirstOrDefault(p => p.Id == model.ProjectId);
 
@@ -480,7 +480,64 @@ namespace Bug_Tracker.Controllers
             DbContext.Tickets.Add(newTicket);
             DbContext.SaveChanges();
 
-            return RedirectToAction("Index","Bug");
+            return RedirectToAction(nameof(BugController.ViewMyTickets), nameof(BugController));
+        }
+
+        [HttpGet]
+        [Authorize(Roles = nameof(UserRoles.Submitter))]
+        public ActionResult ViewMyTickets()
+        {
+            var model = new List<ViewMyTicketsViewModel>();
+            var userId = User.Identity.GetUserId();
+
+            var myTickets = (from u in DbContext.Users
+                             where u.Id == userId
+                             select u.CreatedTickets).FirstOrDefault();
+
+
+
+            foreach (var t in myTickets)
+            {
+                var project = (from p in DbContext.Projects
+                               where p.Id == t.ProjectId
+                               select p).FirstOrDefault();
+
+                var type = (from p in DbContext.TicketTypes
+                            where p.Id == t.TypeId
+                            select p).FirstOrDefault();
+
+                var status = (from p in DbContext.TicketStatuses
+                            where p.Id == t.StatusId
+                            select p).FirstOrDefault();
+
+                var priority = (from p in DbContext.TicketPriorities
+                            where p.Id == t.PriorityId
+                            select p).FirstOrDefault();
+
+                var creator = (from p in DbContext.Users
+                                where p.Id == t.CreatedById
+                                select p).FirstOrDefault();
+
+                var assignedDeveloper = (from p in DbContext.Users
+                               where p.Id == t.AssignedDeveloperId
+                               select p).FirstOrDefault();
+
+                model.Add(new ViewMyTicketsViewModel()
+                {
+                    Id = t.Id,
+                    Title = t.Title,
+                    Description = t.Description,
+                    DateCreated = t.DateCreated,
+                    DateUpdated = t.DateUpdated,
+                    Project = project,
+                    Type = type,
+                    Priority = priority,
+                    Status = status,
+                    Creator = creator,
+                    AssignedDeveloper = assignedDeveloper
+                });
+            }
+            return View(model);
         }
     }
 }

@@ -64,7 +64,7 @@
                         }
                         @if (User.Identity.IsAuthenticated)
                         {
-                            <a class="collapse-item" href="@Url.Action("ViewMyProjects","Bug")">
+                            <a class="collapse-item" href="@Url.Action(nameof(BugController.ViewMyProjects),"Bug")">
                                 <i class="fas fa-folder"></i>
                                 My Projects
                             </a>
@@ -72,7 +72,7 @@
 
                         @if (User.IsInRole(nameof(UserRoles.Admin)) || User.IsInRole(nameof(UserRoles.ProjectManager)))
                         {
-                            <a class="collapse-item" href="@Url.Action("ViewAllProjects", "Bug")">
+                            <a class="collapse-item" href="@Url.Action(nameof(BugController.ViewMyProjects), "Bug")">
                                 <i class="fas fa-folder"></i>
                                 All Projects
                             </a>
@@ -92,7 +92,7 @@
                         <h6 class="collapse-header">Tickets:</h6>
                         @if (User.IsInRole(nameof(UserRoles.Submitter)))
                         {
-                            <a class="collapse-item" href="@Url.Action("CreateTicket","Bug")">
+                            <a class="collapse-item" href="@Url.Action(nameof(BugController.CreateTicket),nameof(BugController))">
                                 <i class="fas fa-plus"></i>
                                 Create Ticket
                             </a>
@@ -100,7 +100,7 @@
 
                         @if (User.IsInRole(nameof(UserRoles.Submitter)))
                         {
-                            <a class="collapse-item" href="#">
+                            <a class="collapse-item" href="@Url.Action(nameof(BugController.ViewMyTickets),"Bug")">
                                 <i class="fas fa-ticket-alt"></i>
                                 My Tickets
                             </a>
