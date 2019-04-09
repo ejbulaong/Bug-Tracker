@@ -499,16 +499,16 @@ namespace Bug_Tracker.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = nameof(UserRoles.Submitter))]
+        [Authorize(Roles = nameof(UserRoles.Submitter) + "," + nameof(UserRoles.Developer))]
         public ActionResult ViewMyProjectsTickets()
         {
             var userId = User.Identity.GetUserId();
 
             var myProjects = (from u in DbContext.Users
-                                     where u.Id == userId
-                                     select u.Projects).FirstOrDefault();
+                              where u.Id == userId
+                              select u.Projects).FirstOrDefault();
             var listOfTickets = new List<Ticket>();
-            foreach(var p in myProjects)
+            foreach (var p in myProjects)
             {
                 foreach (var t in p.Tickets)
                 {
@@ -517,6 +517,19 @@ namespace Bug_Tracker.Controllers
             }
 
             var model = MakeTicketViewModel(listOfTickets);
+
+            return View(model);
+        }
+
+        [HttpGet]
+        [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
+        public ActionResult ViewAllTickets()
+        {
+            var AllTickets = (from t in DbContext.Tickets
+                               where t != null
+                               select t).ToList();
+
+            var model = MakeTicketViewModel(AllTickets);
 
             return View(model);
         }

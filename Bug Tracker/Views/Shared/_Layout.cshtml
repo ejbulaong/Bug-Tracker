@@ -102,7 +102,7 @@
                         {
                             <a class="collapse-item" href="@Url.Action(nameof(BugController.ViewMyCreatedTickets),"Bug")">
                                 <i class="fas fa-ticket-alt"></i>
-                                My Tickets
+                                My Created Tickets
                             </a>
                         }
                         @if (User.IsInRole(nameof(UserRoles.Developer)) || User.IsInRole(nameof(UserRoles.Submitter)))
@@ -122,7 +122,7 @@
                         }
                         @if (User.IsInRole(nameof(UserRoles.Admin)) || User.IsInRole(nameof(UserRoles.ProjectManager)))
                         {
-                            <a class="collapse-item" href="#">
+                            <a class="collapse-item" href="@Url.Action(nameof(BugController.ViewAllTickets),"Bug")">
                                 <i class="fas fa-ticket-alt"></i>
                                 All Tickets
                             </a>

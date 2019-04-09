@@ -2065,6 +2065,7 @@
     <Content Include="Views\Bug\CreateTicket.cshtml" />
     <Content Include="Views\Bug\ViewMyCreatedTickets.cshtml" />
     <Content Include="Views\Bug\ViewMyProjectsTickets.cshtml" />
+    <Content Include="Views\Bug\ViewAllTickets.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

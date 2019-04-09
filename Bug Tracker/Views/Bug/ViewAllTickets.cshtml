@@ -3,18 +3,12 @@
     ViewBag.Title = "ViewMyTickets";
 }
 
-<h2>My Project's Tickets</h2>
+<h2>All Tickets</h2>
 
 <!-- DataTales Example -->
 <div class="card shadow mb-4">
     <div class="card-header py-3">
-        @if (User.IsInRole(nameof(UserRoles.Submitter)))
-        {
-            <a href="@Url.Action(nameof(BugController.CreateTicket), "Bug")" title="Create New Ticket">
-                <i class="fas fa-plus"></i>
-                Create New Ticket
-            </a>
-        }
+
     </div>
     <div class="card-body">
         <div class="table-responsive">
