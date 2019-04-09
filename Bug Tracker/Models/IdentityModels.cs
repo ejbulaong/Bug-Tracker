@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -13,6 +14,10 @@ namespace Bug_Tracker.Models
     {
         public string Name { get; set; }
         public virtual List<Project> Projects { get; set; }
+        [InverseProperty(nameof(Ticket.CreatedBy))]
+        public virtual List<Ticket> CreatedTickets { get; set; }
+        [InverseProperty(nameof(Ticket.AssignedDeveloper))]
+        public virtual List<Ticket> AssignedTickets { get; set; }
 
         public ApplicationUser()
         {

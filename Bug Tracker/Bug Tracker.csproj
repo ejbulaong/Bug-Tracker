@@ -197,6 +197,7 @@
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\ViewModels\CreateProjectViewModel.cs" />
+    <Compile Include="Models\ViewModels\CreateTicketViewModel.cs" />
     <Compile Include="Models\ViewModels\EditMembersViewModel.cs" />
     <Compile Include="Models\ViewModels\EditProjectViewModel.cs" />
     <Compile Include="Models\ViewModels\EditRolesViewModel.cs" />
@@ -2060,6 +2061,7 @@
     <Content Include="Views\Bug\EditMembers.cshtml" />
     <Content Include="Views\Bug\EditRoles.cshtml" />
     <Content Include="Views\Bug\ProjectDetails.cshtml" />
+    <Content Include="Views\Bug\CreateTicket.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

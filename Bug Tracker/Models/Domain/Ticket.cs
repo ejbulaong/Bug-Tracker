@@ -13,11 +13,22 @@ namespace Bug_Tracker.Models.Domain
         public DateTime DateCreated { get; set; }
         public DateTime? DateUpdated { get; set; }
 
-        public virtual int ProjectId { get; set; }
-        public virtual int TicketTypeId { get; set; }
-        public virtual int TicketPriorityId { get; set; }
-        public virtual int TicketStatusId { get; set; }
-        public virtual int CreatorId { get; set; }
-        public virtual int DeveloperAssignedId { get; set; }
+        public ApplicationUser AssignedDeveloper { get; set; }
+        public string AssignedDeveloperId { get; set; }
+
+        public ApplicationUser CreatedBy { get; set; }
+        public string CreatedById { get; set; }
+
+        public Project Project { get; set; }
+        public int ProjectId { get; set; }
+
+        public TicketPriority Priority { get; set; }
+        public int PriorityId { get; set; }
+
+        public TicketStatus Status { get; set; }
+        public int StatusId { get; set; }
+
+        public TicketType Type { get; set; }
+        public int TypeId { get; set; }
     }
 }

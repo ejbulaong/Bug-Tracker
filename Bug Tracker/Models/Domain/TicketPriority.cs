@@ -9,12 +9,11 @@ namespace Bug_Tracker.Models.Domain
     {
         public int Id { get; set; }
         public string Name { get; set; }
-
-        public TicketPriority(string name)
-        {
-            Name = name;
-        }
-
         public virtual List<Ticket> Tickets { get; set; }
+
+        public TicketPriority()
+        {
+            Tickets = new List<Ticket>();
+        }
     }
 }

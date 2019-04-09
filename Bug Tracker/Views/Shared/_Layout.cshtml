@@ -62,10 +62,14 @@
                                 Create Project
                             </a>
                         }
-                        <a class="collapse-item" href="@Url.Action("ViewMyProjects","Bug")">
-                            <i class="fas fa-folder"></i>
-                            My Projects
-                        </a>
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <a class="collapse-item" href="@Url.Action("ViewMyProjects","Bug")">
+                                <i class="fas fa-folder"></i>
+                                My Projects
+                            </a>
+                        }
+
                         @if (User.IsInRole(nameof(UserRoles.Admin)) || User.IsInRole(nameof(UserRoles.ProjectManager)))
                         {
                             <a class="collapse-item" href="@Url.Action("ViewAllProjects", "Bug")">
@@ -86,7 +90,43 @@
                 <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <h6 class="collapse-header">Tickets:</h6>
-                        <a class="collapse-item" href="#">!!!To Follow!!!</a>
+                        @if (User.IsInRole(nameof(UserRoles.Submitter)))
+                        {
+                            <a class="collapse-item" href="@Url.Action("CreateTicket","Bug")">
+                                <i class="fas fa-plus"></i>
+                                Create Ticket
+                            </a>
+                        }
+
+                        @if (User.IsInRole(nameof(UserRoles.Submitter)))
+                        {
+                            <a class="collapse-item" href="#">
+                                <i class="fas fa-ticket-alt"></i>
+                                My Tickets
+                            </a>
+                        }
+                        @if (User.IsInRole(nameof(UserRoles.Developer)) || User.IsInRole(nameof(UserRoles.Submitter)))
+                        {
+                            <a class="collapse-item" href="#">
+                                <i class="fas fa-ticket-alt"></i>
+                                My Project's Tickets
+                            </a>
+                        }
+
+                        @if (User.IsInRole(nameof(UserRoles.Developer)))
+                        {
+                            <a class="collapse-item" href="#">
+                                <i class="fas fa-user-tag"></i>
+                                Tickets Assigned To Me
+                            </a>
+                        }
+                        @if (User.IsInRole(nameof(UserRoles.Admin)) || User.IsInRole(nameof(UserRoles.ProjectManager)))
+                        {
+                            <a class="collapse-item" href="#">
+                                <i class="fas fa-ticket-alt"></i>
+                                All Tickets
+                            </a>
+                        }
                     </div>
                 </div>
             </li>
