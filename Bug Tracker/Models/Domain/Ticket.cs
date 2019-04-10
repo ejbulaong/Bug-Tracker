@@ -16,8 +16,8 @@ namespace Bug_Tracker.Models.Domain
         public ApplicationUser AssignedDeveloper { get; set; }
         public string AssignedDeveloperId { get; set; }
 
-        public ApplicationUser CreatedBy { get; set; }
-        public string CreatedById { get; set; }
+        public ApplicationUser Creator { get; set; }
+        public string CreatorId { get; set; }
 
         public Project Project { get; set; }
         public int ProjectId { get; set; }

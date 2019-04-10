@@ -472,7 +472,7 @@ namespace Bug_Tracker.Controllers
             newTicket.DateCreated = DateTime.Now;
             newTicket.DateUpdated = null;
             newTicket.AssignedDeveloper = null;
-            newTicket.CreatedBy = user;
+            newTicket.Creator = user;
             newTicket.Priority = priority;
             newTicket.Status = status;
             newTicket.Type = type;
@@ -499,6 +499,29 @@ namespace Bug_Tracker.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
+        public ActionResult AssignTicket()
+        {
+            var userManager =
+                new UserManager<ApplicationUser>(
+                        new UserStore<ApplicationUser>(DbContext));
+
+            var devRoleId = (from r in DbContext.Roles
+                             where r.Name == nameof(UserRoles.Developer)
+                             select r.Id).FirstOrDefault();
+
+            var developers = (from u in DbContext.Users
+                              where u.Roles.Any(r => r.RoleId == devRoleId)
+                              select u).ToList();
+
+            var tickets = (from t in DbContext.Tickets
+                           where t != null
+                           select t).ToList();
+
+            return View();
+        }
+
+        [HttpGet]
         [Authorize(Roles = nameof(UserRoles.Submitter) + "," + nameof(UserRoles.Developer))]
         public ActionResult ViewMyProjectsTickets()
         {
@@ -507,6 +530,7 @@ namespace Bug_Tracker.Controllers
             var myProjects = (from u in DbContext.Users
                               where u.Id == userId
                               select u.Projects).FirstOrDefault();
+
             var listOfTickets = new List<Ticket>();
             foreach (var p in myProjects)
             {
@@ -522,19 +546,121 @@ namespace Bug_Tracker.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = nameof(UserRoles.Developer))]
+        public ActionResult ViewMyAssignedTickets()
+        {
+            var userId = User.Identity.GetUserId();
+
+            var assignedTickets = (from u in DbContext.Users
+                                   where u.Id == userId
+                                   select u.AssignedTickets).FirstOrDefault();
+
+            var model = MakeTicketViewModel(assignedTickets);
+
+            return View(model);
+        }
+
+        [HttpGet]
         [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
         public ActionResult ViewAllTickets()
         {
             var AllTickets = (from t in DbContext.Tickets
-                               where t != null
-                               select t).ToList();
+                              where t != null
+                              select t).ToList();
 
             var model = MakeTicketViewModel(AllTickets);
 
             return View(model);
         }
 
-        private List<TicketsViewModel> MakeTicketViewModel(List<Ticket> ticketList)
+        [HttpGet]
+        [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
+        public ActionResult EditTicket(int? Id)
+        {
+            if (!Id.HasValue)
+            {
+                return RedirectToAction(nameof(HomeController.Index), "Home");
+            }
+
+            var ticketToEdit = (from t in DbContext.Tickets
+                                where t.Id == Id
+                                select t).FirstOrDefault();
+
+            var types = (from t in DbContext.TicketTypes
+                         where t != null
+                         select t).ToList();
+
+            var priorities = (from p in DbContext.TicketPriorities
+                              where p != null
+                              select p).ToList();
+
+            var statuses = (from s in DbContext.TicketStatuses
+                            where s != null
+                            select s).ToList();
+
+            var allProjects = (from p in DbContext.Projects
+                               where p != null
+                               select p).ToList();
+
+            var devRoleId = (from r in DbContext.Roles
+                             where r.Name == nameof(UserRoles.Developer)
+                             select r.Id).FirstOrDefault();
+
+            var developers = (from u in DbContext.Users
+                              where u.Roles.Any(r => r.RoleId == devRoleId)
+                              select u).ToList();
+
+            var model = new EditTicketViewModel()
+            {
+                Id = ticketToEdit.Id,
+                Title = ticketToEdit.Title,
+                Description = ticketToEdit.Description,
+                ProjectId = ticketToEdit.ProjectId,
+                TypeId = ticketToEdit.TypeId,
+                PriorityId = ticketToEdit.PriorityId,
+                StatusId = ticketToEdit.StatusId,
+                Creator = ticketToEdit.Creator,
+                Projects = allProjects,
+                Types = types,
+                Priorities = priorities,
+                Statuses = statuses,
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
+        public ActionResult EditTicket(EditTicketViewModel model)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var type = DbContext.TicketTypes.FirstOrDefault(t => t.Id == model.TypeId);
+            var status = DbContext.TicketStatuses.FirstOrDefault(t => t.Id == model.StatusId);
+            var priority = DbContext.TicketPriorities.FirstOrDefault(p => p.Id == model.PriorityId);
+            var project = DbContext.Projects.FirstOrDefault(p => p.Id == model.ProjectId);
+
+            var ticketToEdit = (from t in DbContext.Tickets
+                                where t.Id == model.Id
+                                select t).FirstOrDefault();
+
+            ticketToEdit.Title = model.Title;
+            ticketToEdit.Description = model.Description;
+            ticketToEdit.DateUpdated = DateTime.Now;
+            ticketToEdit.Priority = priority;
+            ticketToEdit.Status = status;
+            ticketToEdit.Type = type;
+            ticketToEdit.Project = project;
+
+            DbContext.SaveChanges();
+
+            return RedirectToAction(nameof(BugController.ViewAllTickets), "Bug");
+        }
+            private List<TicketsViewModel> MakeTicketViewModel(List<Ticket> ticketList)
         {
             var model = new List<TicketsViewModel>();
 
@@ -557,7 +683,7 @@ namespace Bug_Tracker.Controllers
                                 select p).FirstOrDefault();
 
                 var creator = (from p in DbContext.Users
-                               where p.Id == t.CreatedById
+                               where p.Id == t.CreatorId
                                select p).FirstOrDefault();
 
                 var assignedDeveloper = (from p in DbContext.Users

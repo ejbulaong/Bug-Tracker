@@ -157,7 +157,6 @@ namespace Bug_Tracker.Controllers
 
                 var result = await UserManager.CreateAsync(user, model.Password);
 
-                UserManager.AddToRole(user.Id, nameof(UserRoles.Submitter));
                 if (result.Succeeded)
                 {
                     UserManager.AddToRole(user.Id, nameof(UserRoles.Submitter));

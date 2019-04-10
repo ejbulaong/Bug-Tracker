@@ -14,7 +14,7 @@ namespace Bug_Tracker.Models
     {
         public string Name { get; set; }
         public virtual List<Project> Projects { get; set; }
-        [InverseProperty(nameof(Ticket.CreatedBy))]
+        [InverseProperty(nameof(Ticket.Creator))]
         public virtual List<Ticket> CreatedTickets { get; set; }
         [InverseProperty(nameof(Ticket.AssignedDeveloper))]
         public virtual List<Ticket> AssignedTickets { get; set; }
