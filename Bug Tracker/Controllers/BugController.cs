@@ -194,6 +194,7 @@ namespace Bug_Tracker.Controllers
                              Id = p.Id,
                              Name = p.Name,
                              Users = p.Users,
+                             Tickets = p.Tickets,
                              DateCreated = p.DateCreated,
                              DateUpdated = p.DateUpdated
                          }).ToList();
@@ -217,6 +218,7 @@ namespace Bug_Tracker.Controllers
                              Id = p.Id,
                              Name = p.Name,
                              Users = p.Users,
+                             Tickets = p.Tickets,
                              DateCreated = p.DateCreated,
                              DateUpdated = p.DateUpdated
                          }).ToList();
@@ -413,6 +415,7 @@ namespace Bug_Tracker.Controllers
                 Id = project.Id,
                 Name = project.Name,
                 Details = project.Details,
+                Tickets = project.Tickets,
                 DateCreated = project.DateCreated,
                 DateUpdated = project.DateUpdated,
                 Users = project.Users
@@ -500,8 +503,13 @@ namespace Bug_Tracker.Controllers
 
         [HttpGet]
         [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
-        public ActionResult AssignTicket()
+        public ActionResult AssignTicket(int? Id)
         {
+            if (!Id.HasValue)
+            {
+                return RedirectToAction(nameof(HomeController.Index), "Home");
+            }
+
             var userManager =
                 new UserManager<ApplicationUser>(
                         new UserStore<ApplicationUser>(DbContext));
@@ -514,13 +522,55 @@ namespace Bug_Tracker.Controllers
                               where u.Roles.Any(r => r.RoleId == devRoleId)
                               select u).ToList();
 
-            var tickets = (from t in DbContext.Tickets
-                           where t != null
-                           select t).ToList();
+            var ticket = (from t in DbContext.Tickets
+                          where t.Id == Id
+                          select t).FirstOrDefault();
 
-            return View();
+            var model = new AssignTicketViewModel()
+            {
+                Id = ticket.Id,
+                Title = ticket.Title,
+                AssignedDeveloper = ticket.AssignedDeveloper,
+                Developers = developers
+            };
+
+            return View(model);
         }
 
+        [HttpPost]
+        [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
+        public ActionResult AssignTicket(AssignTicketViewModel model)
+        {
+            var ticket = (from t in DbContext.Tickets
+                          where t.Id == model.Id
+                          select t).FirstOrDefault();
+
+            if (model.AssignedDeveloperId != null)
+            {
+                var developer = (from d in DbContext.Users
+                                 where d.Id == model.AssignedDeveloperId
+                                 select d).FirstOrDefault();
+
+                ticket.AssignedDeveloper = developer;
+                DbContext.SaveChanges();
+            }
+
+            return RedirectToAction(nameof(BugController.ViewAllTickets), "Bug");
+        }
+
+        [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
+        public ActionResult UnAssignTicket(int Id)
+        {
+            var ticket = (from t in DbContext.Tickets
+                          where t.Id == Id
+                          select t).FirstOrDefault();
+
+            ticket.AssignedDeveloper = null;
+            ticket.AssignedDeveloperId = null;
+            DbContext.SaveChanges();
+
+            return RedirectToAction(nameof(BugController.ViewAllTickets), "Bug");
+        }
         [HttpGet]
         [Authorize(Roles = nameof(UserRoles.Submitter) + "," + nameof(UserRoles.Developer))]
         public ActionResult ViewMyProjectsTickets()
@@ -660,7 +710,7 @@ namespace Bug_Tracker.Controllers
 
             return RedirectToAction(nameof(BugController.ViewAllTickets), "Bug");
         }
-            private List<TicketsViewModel> MakeTicketViewModel(List<Ticket> ticketList)
+        private List<TicketsViewModel> MakeTicketViewModel(List<Ticket> ticketList)
         {
             var model = new List<TicketsViewModel>();
 

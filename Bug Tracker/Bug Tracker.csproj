@@ -196,6 +196,7 @@
     <Compile Include="Models\EmailService.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\ViewModels\AssignTicketViewModel.cs" />
     <Compile Include="Models\ViewModels\CreateProjectViewModel.cs" />
     <Compile Include="Models\ViewModels\CreateTicketViewModel.cs" />
     <Compile Include="Models\ViewModels\EditMembersViewModel.cs" />
