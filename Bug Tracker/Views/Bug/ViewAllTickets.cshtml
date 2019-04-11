@@ -33,7 +33,11 @@
                     {
                         <tr>
                             <td>@m.Project.Name</td>
-                            <td>@m.Title</td>
+                            <td>
+                                <a title="Ticket Details" href="@Url.Action(nameof(BugController.ViewTicketDetails),"Bug",new {Id=m.Id })">
+                                    @m.Title
+                                </a>
+                            </td>
                             <td>@m.DateCreated</td>
                             @if (m.DateUpdated == null)
                             {

@@ -36,7 +36,12 @@
                     @foreach (var m in Model)
                     {
                         <tr>
-                            <td>@m.Title</td>
+                            <td>@m.Project.Name</td>
+                            <td>
+                                <a title="Ticket Details" href="@Url.Action(nameof(BugController.ViewTicketDetails),"Bug",new {Id=m.Id })">
+                                    @m.Title
+                                </a>
+                            </td>
                             <td>@m.DateCreated</td>
                             @if (m.DateUpdated == null)
                             {
@@ -46,7 +51,6 @@
                             {
                                 <td>@m.DateUpdated</td>
                             }
-                            <td>@m.Project.Name</td>
                             <td>@m.Type.Name</td>
                             <td>@m.Priority.Name</td>
                             <td>@m.Status.Name</td>

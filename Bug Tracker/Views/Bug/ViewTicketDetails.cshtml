@@ -1,0 +1,57 @@
+﻿@model TicketsViewModel
+@{
+    ViewBag.Title = "ViewTicketDetails";
+}
+
+<h2>Ticket Details</h2>
+<div class="row">
+    <div class="col-6">
+        <div class="card" style="width: 100%">
+            <div class="card-body">
+                <h5 class="card-title">Title: @Model.Title</h5>
+                <h6 class="card-subtitle mb-2 text-muted">Description: @Model.Description </h6>
+                <h6 class="card-subtitle mb-2 text-muted">Date Created: @Model.DateCreated </h6>
+                @if (Model.DateUpdated != null)
+                {
+                    <h6 class="card-subtitle mb-2 text-muted">Date Updated: @Model.DateUpdated </h6>
+                }
+                else
+                {
+                    <h6 class="card-subtitle mb-2 text-muted">Date Updated: Not Updated</h6>
+                }
+                <h6 class="card-subtitle mb-2 text-muted">Project: @Model.Project.Name </h6>
+                <h6 class="card-subtitle mb-2 text-muted">Type: @Model.Type.Name </h6>
+                <h6 class="card-subtitle mb-2 text-muted">Priority: @Model.Priority.Name</h6>
+                <h6 class="card-subtitle mb-2 text-muted">Status: @Model.Status.Name </h6>
+                <h6 class="card-subtitle mb-2 text-muted">Creator: @Model.Creator.Name </h6>
+                @if (Model.AssignedDeveloper != null)
+                {
+                    <h6 class="card-subtitle mb-2 text-muted">Assigned Developer: @Model.AssignedDeveloper.Name </h6>
+                }
+                else
+                {
+                    <h6 class="card-subtitle mb-2 text-muted">Assigned Developer: None </h6>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6">
+        <div class="card" style="width: 100%">
+            <div class="card-body">
+                <h5 class="card-title">Attachments:</h5>              
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card" style="width: 100%">
+            <div class="card-body">
+                <h5 class="card-title">Comments:</h5>
+            </div>
+        </div>
+    </div>
+</div>
+
+

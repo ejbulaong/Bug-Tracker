@@ -2071,6 +2071,7 @@
     <Content Include="Views\Bug\ViewMyAssignedTickets.cshtml" />
     <Content Include="Views\Bug\AssignTicket.cshtml" />
     <Content Include="Views\Bug\EditTicket.cshtml" />
+    <Content Include="Views\Bug\ViewTicketDetails.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
