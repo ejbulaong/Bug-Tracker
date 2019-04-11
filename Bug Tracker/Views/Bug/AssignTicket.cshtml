@@ -7,15 +7,7 @@
 <form method="post">
     <div class="card" style="width: 100%">
         <div class="card-body">
-            <h5 class="card-title">Ticket Title: @Model.Title</h5>
-            @if (Model.AssignedDeveloper != null)
-            {
-                <h6 class="card-subtitle mb-2 text-muted">Current Assigned Developer: @Model.AssignedDeveloper.Name </h6>
-            }
-            else
-            {
-                <h6 class="card-subtitle mb-2 text-muted">Current Assigned Developer: None </h6>
-            }
+            <h5 class="card-title">Ticket Title: @Model.Title</h5>          
             <div class="form-group">
                 @Html.LabelFor(m => m.Developers, "Developers:")
                 @Html.DropDownListFor(

@@ -122,10 +122,6 @@
                         }
                         @if (User.IsInRole(nameof(UserRoles.Admin)) || User.IsInRole(nameof(UserRoles.ProjectManager)))
                         {
-                            <a class="collapse-item" href="@Url.Action(nameof(BugController.AssignTicket),"Bug")">
-                                <i class="fas fa-user-tag"></i>
-                                Assign Ticket
-                            </a>
                             <a class="collapse-item" href="@Url.Action(nameof(BugController.ViewAllTickets),"Bug")">
                                 <i class="fas fa-ticket-alt"></i>
                                 All Tickets

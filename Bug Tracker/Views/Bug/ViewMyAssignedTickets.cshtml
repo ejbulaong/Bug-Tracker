@@ -24,36 +24,42 @@
                         <th>Priority</th>
                         <th>Creator</th>
                         <th>Developer</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var m in Model)
                     {
-                        <tr>
-                            <td>@m.Project.Name</td>
-                            <td>@m.Title</td>
-                            <td>@m.DateCreated</td>
-                            @if (m.DateUpdated == null)
-                            {
-                                <td>Not Updated</td>
-                            }
-                            else
-                            {
-                                <td>@m.DateUpdated</td>
-                            }
-                            <td>@m.Type.Name</td>
-                            <td>@m.Status.Name</td>
-                            <td>@m.Priority.Name</td>
-                            <td>@m.Creator.Name</td>
-                            @if (m.AssignedDeveloper == null)
-                            {
-                                <td>Not Assigned</td>
-                            }
-                            else
-                            {
-                                <td>@m.AssignedDeveloper.Name</td>
-                            }
-                        </tr>
+                    <tr>
+                        <td>@m.Project.Name</td>
+                        <td>@m.Title</td>
+                        <td>@m.DateCreated</td>
+                        @if (m.DateUpdated == null)
+                        {
+                            <td>Not Updated</td>
+                        }
+                        else
+                        {
+                            <td>@m.DateUpdated</td>
+                        }
+                        <td>@m.Type.Name</td>
+                        <td>@m.Status.Name</td>
+                        <td>@m.Priority.Name</td>
+                        <td>@m.Creator.Name</td>
+                        @if (m.AssignedDeveloper == null)
+                        {
+                            <td>Not Assigned</td>
+                        }
+                        else
+                        {
+                            <td>@m.AssignedDeveloper.Name</td>
+                        }
+                        <td class="td-center">
+                            <a href="@Url.Action(nameof(BugController.EditTicket),"Bug",new {Id=m.Id })" title="Edit Ticket">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                        </td>
+                    </tr>
                     }
                 </tbody>
             </table>

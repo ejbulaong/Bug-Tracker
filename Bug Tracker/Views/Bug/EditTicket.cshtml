@@ -50,14 +50,17 @@
                             new SelectList(Model.Priorities, "ID", "Name"),
                             "-- Please select a priority --",new {@class="form-control" })
                         </div>
+                        @if (User.IsInRole(nameof(UserRoles.Admin)) || User.IsInRole(nameof(UserRoles.ProjectManager)))
+                        {
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.Statuses, "Status:")
+                                @Html.DropDownListFor(
+                                p => p.StatusId,
+                                new SelectList(Model.Statuses, "ID", "Name"),
+                                "-- Please select a status --",new {@class="form-control" })
+                            </div>
+                        }
 
-                        <div class="form-group">
-                            @Html.LabelFor(m => m.Statuses, "Status:")
-                            @Html.DropDownListFor(
-                            p => p.StatusId,
-                            new SelectList(Model.Statuses, "ID", "Name"),
-                            "-- Please select a status --",new {@class="form-control" })
-                        </div>
                     </div>
                     <button type="submit" class="btn btn-primary">Save</button>
                     <a href="@Url.Action(nameof(BugController.ViewAllTickets),"Bug")" class="btn btn-danger">Cancel</a>
