@@ -11,6 +11,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
 using System.Data.Entity;
+using System.IO;
 
 namespace Bug_Tracker.Controllers
 {
@@ -753,7 +754,7 @@ namespace Bug_Tracker.Controllers
             {
                 return RedirectToAction(nameof(HomeController.Index), "Home");
             }
-            var userId = User.Identity.GetUserId();            
+            var userId = User.Identity.GetUserId();
 
             var user = (from u in DbContext.Users
                         where u.Id == userId
@@ -781,10 +782,84 @@ namespace Bug_Tracker.Controllers
                 Status = ticket.Status,
                 Creator = ticket.Creator,
                 AssignedDeveloper = ticket.AssignedDeveloper,
-                Comments = ticket.Comments
+                Comments = ticket.Comments,
+                Attachments = ticket.Attachments
             };
 
             return View(model);
+        }
+
+        [HttpPost]
+        [Authorize]
+        public ActionResult ViewTicketDetails(int? Id, HttpPostedFileBase file)
+        {
+            if (!Id.HasValue)
+            {
+                return RedirectToAction(nameof(BugController.Index), "Bug");
+            }
+
+            var ticket = (from t in DbContext.Tickets
+                          where t.Id == Id
+                          select t).FirstOrDefault();
+
+            var userId = User.Identity.GetUserId();
+
+            var user = (from u in DbContext.Users
+                        where u.Id == userId
+                        select u).FirstOrDefault();
+
+            if (User.IsInRole(nameof(UserRoles.Submitter)) && !user.CreatedTickets.Contains(ticket))
+            {
+                return RedirectToAction(nameof(BugController.Index), "Bug");
+            }
+
+            if (User.IsInRole(nameof(UserRoles.Developer)) && !user.AssignedTickets.Contains(ticket))
+            {
+                return RedirectToAction(nameof(BugController.Index), "Bug");
+            }
+
+            if (file != null)
+            {
+                var uploadFolder = "~/Uploads/";
+                var mappedFolder = Server.MapPath(uploadFolder);
+
+                if (!Directory.Exists(mappedFolder))
+                {
+                    Directory.CreateDirectory(mappedFolder);
+                }
+
+                file.SaveAs(mappedFolder + file.FileName);
+
+                var newAttachment = new TicketAttachment()
+                {
+                    FileName = file.FileName,
+                    FilePath = uploadFolder + file.FileName,
+                    DateCreated = DateTime.Now,
+                    Ticket = ticket,
+                    User = user
+                };
+                ticket.Attachments.Add(newAttachment);
+                DbContext.SaveChanges();
+            }
+
+            var model = new TicketsViewModel()
+            {
+                Id = ticket.Id,
+                Title = ticket.Title,
+                Description = ticket.Description,
+                DateCreated = ticket.DateCreated,
+                DateUpdated = ticket.DateUpdated,
+                Project = ticket.Project,
+                Type = ticket.Type,
+                Priority = ticket.Priority,
+                Status = ticket.Status,
+                Creator = ticket.Creator,
+                AssignedDeveloper = ticket.AssignedDeveloper,
+                Comments = ticket.Comments,
+                Attachments = ticket.Attachments
+            };
+
+            return RedirectToAction(nameof(BugController.ViewTicketDetails), "Bug", model);
         }
 
         [Authorize]
@@ -822,7 +897,7 @@ namespace Bug_Tracker.Controllers
                 User = user
             };
             ticket.Comments.Add(newComment);
-            DbContext.SaveChanges();       
+            DbContext.SaveChanges();
 
             var model = new TicketsViewModel()
             {
@@ -840,7 +915,7 @@ namespace Bug_Tracker.Controllers
                 Comments = ticket.Comments
             };
 
-            return RedirectToAction(nameof(BugController.ViewTicketDetails),"Bug",model);
+            return RedirectToAction(nameof(BugController.ViewTicketDetails), "Bug", model);
         }
 
         private List<TicketsViewModel> MakeTicketViewModel(List<Ticket> ticketList)
@@ -890,6 +965,26 @@ namespace Bug_Tracker.Controllers
             }
 
             return model;
+        }
+
+        private string UploadFile(HttpPostedFileBase file)
+        {
+            if (file != null)
+            {
+                var uploadFolder = "~/Upload/";
+                var mappedFolder = Server.MapPath(uploadFolder);
+
+                if (!Directory.Exists(mappedFolder))
+                {
+                    Directory.CreateDirectory(mappedFolder);
+                }
+
+                file.SaveAs(mappedFolder + file.FileName);
+
+                return uploadFolder + file.FileName;
+            }
+
+            return null;
         }
     }
 }

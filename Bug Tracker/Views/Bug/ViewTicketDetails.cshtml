@@ -41,6 +41,17 @@
         <div class="card" style="width: 100%">
             <div class="card-body">
                 <h5 class="card-title">Attachments:</h5>
+                <form action="" method="post" enctype="multipart/form-data">
+                    <label for="file">Filename:</label>
+                    <input type="file" name="file" id="file" />
+                    <button type="submit" class="btn btn-primary">Attach</button>
+                </form>
+                @foreach (var a in Model.Attachments)
+                {
+                    <a class="d-block" href="@Url.Content(a.FilePath)">
+                        @a.FileName
+                    </a>
+                }
             </div>
         </div>
     </div>

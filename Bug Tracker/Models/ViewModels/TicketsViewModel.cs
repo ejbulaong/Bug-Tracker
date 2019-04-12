@@ -20,5 +20,6 @@ namespace Bug_Tracker.Models.ViewModels
         public ApplicationUser Creator { get; set; }
         public ApplicationUser AssignedDeveloper { get; set; }
         public List<TicketComment> Comments { get; set; }
+        public List<TicketAttachment> Attachments { get; set; }
     }
 }

@@ -32,5 +32,7 @@ namespace Bug_Tracker.Models.Domain
         public int TypeId { get; set; }
 
         public virtual List<TicketComment> Comments { get; set; }
+
+        public virtual List<TicketAttachment> Attachments { get; set; }
     }
 }
