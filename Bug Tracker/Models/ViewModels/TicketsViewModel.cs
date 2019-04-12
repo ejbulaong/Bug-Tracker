@@ -19,5 +19,6 @@ namespace Bug_Tracker.Models.ViewModels
         public TicketStatus Status { get; set; }
         public ApplicationUser Creator { get; set; }
         public ApplicationUser AssignedDeveloper { get; set; }
+        public List<TicketComment> Comments { get; set; }
     }
 }

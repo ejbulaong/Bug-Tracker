@@ -10,6 +10,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
+using System.Data.Entity;
 
 namespace Bug_Tracker.Controllers
 {
@@ -752,7 +753,7 @@ namespace Bug_Tracker.Controllers
             {
                 return RedirectToAction(nameof(HomeController.Index), "Home");
             }
-            var userId = User.Identity.GetUserId();
+            var userId = User.Identity.GetUserId();            
 
             var user = (from u in DbContext.Users
                         where u.Id == userId
@@ -767,29 +768,61 @@ namespace Bug_Tracker.Controllers
                 return RedirectToAction(nameof(HomeController.Index), "Home");
             }
 
-            var project = (from p in DbContext.Projects
-                           where p.Id == ticket.ProjectId
-                           select p).FirstOrDefault();
+            var model = new TicketsViewModel()
+            {
+                Id = ticket.Id,
+                Title = ticket.Title,
+                Description = ticket.Description,
+                DateCreated = ticket.DateCreated,
+                DateUpdated = ticket.DateUpdated,
+                Project = ticket.Project,
+                Type = ticket.Type,
+                Priority = ticket.Priority,
+                Status = ticket.Status,
+                Creator = ticket.Creator,
+                AssignedDeveloper = ticket.AssignedDeveloper,
+                Comments = ticket.Comments
+            };
 
-            var type = (from p in DbContext.TicketTypes
-                        where p.Id == ticket.TypeId
-                        select p).FirstOrDefault();
+            return View(model);
+        }
 
-            var status = (from p in DbContext.TicketStatuses
-                          where p.Id == ticket.StatusId
-                          select p).FirstOrDefault();
+        [Authorize]
+        public ActionResult AddComment(string comment, int? Id)
+        {
+            if (!Id.HasValue)
+            {
+                return RedirectToAction(nameof(BugController.Index), "Bug");
+            }
 
-            var priority = (from p in DbContext.TicketPriorities
-                            where p.Id == ticket.PriorityId
-                            select p).FirstOrDefault();
+            var ticket = (from t in DbContext.Tickets
+                          where t.Id == Id
+                          select t).FirstOrDefault();
 
-            var creator = (from p in DbContext.Users
-                           where p.Id == ticket.CreatorId
-                           select p).FirstOrDefault();
+            var userId = User.Identity.GetUserId();
 
-            var assignedDeveloper = (from p in DbContext.Users
-                                     where p.Id == ticket.AssignedDeveloperId
-                                     select p).FirstOrDefault();
+            var user = (from u in DbContext.Users
+                        where u.Id == userId
+                        select u).FirstOrDefault();
+
+            if (User.IsInRole(nameof(UserRoles.Submitter)) && !user.CreatedTickets.Contains(ticket))
+            {
+                return RedirectToAction(nameof(BugController.Index), "Bug");
+            }
+
+            if (User.IsInRole(nameof(UserRoles.Developer)) && !user.AssignedTickets.Contains(ticket))
+            {
+                return RedirectToAction(nameof(BugController.Index), "Bug");
+            }
+
+            var newComment = new TicketComment()
+            {
+                Comment = comment,
+                DateCreated = DateTime.Now,
+                User = user
+            };
+            ticket.Comments.Add(newComment);
+            DbContext.SaveChanges();       
 
             var model = new TicketsViewModel()
             {
@@ -799,14 +832,15 @@ namespace Bug_Tracker.Controllers
                 DateCreated = ticket.DateCreated,
                 DateUpdated = ticket.DateUpdated,
                 Project = ticket.Project,
-                Type = type,
-                Priority = priority,
-                Status = status,
-                Creator = creator,
-                AssignedDeveloper = assignedDeveloper
+                Type = ticket.Type,
+                Priority = ticket.Priority,
+                Status = ticket.Status,
+                Creator = ticket.Creator,
+                AssignedDeveloper = ticket.AssignedDeveloper,
+                Comments = ticket.Comments
             };
 
-            return View(model);
+            return RedirectToAction(nameof(BugController.ViewTicketDetails),"Bug",model);
         }
 
         private List<TicketsViewModel> MakeTicketViewModel(List<Ticket> ticketList)
