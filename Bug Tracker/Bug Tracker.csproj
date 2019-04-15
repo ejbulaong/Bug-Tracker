@@ -196,6 +196,7 @@
     <Compile Include="Models\Domain\TicketStatus.cs" />
     <Compile Include="Models\Domain\TicketType.cs" />
     <Compile Include="Models\EmailService.cs" />
+    <Compile Include="Models\Filters\BugTrackerFiltersAuthorization.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\ViewModels\AssignTicketViewModel.cs" />
@@ -2074,6 +2075,7 @@
     <Content Include="Views\Bug\AssignTicket.cshtml" />
     <Content Include="Views\Bug\EditTicket.cshtml" />
     <Content Include="Views\Bug\ViewTicketDetails.cshtml" />
+    <Content Include="Views\Bug\UnAuthorizeAccess.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

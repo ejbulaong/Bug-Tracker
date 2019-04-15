@@ -12,6 +12,7 @@ using System.Web.Mvc;
 using System.Web.Security;
 using System.Data.Entity;
 using System.IO;
+using Bug_Tracker.Models.Filters;
 
 namespace Bug_Tracker.Controllers
 {
@@ -29,8 +30,14 @@ namespace Bug_Tracker.Controllers
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }
 
+        public ActionResult UnAuthorizeAccess()
+        {
+
+            return View();
+        }
+
         [HttpGet]
-        [Authorize(Roles = nameof(UserRoles.Admin))]
+        [BugTrackerFiltersAuthorization(Roles = nameof(UserRoles.Admin))]
         public ActionResult ManageUsers()
         {
             var userManager =
@@ -62,7 +69,7 @@ namespace Bug_Tracker.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = nameof(UserRoles.Admin))]
+        [BugTrackerFiltersAuthorization(Roles = nameof(UserRoles.Admin))]
         public ActionResult EditRoles(string userId)
         {
             if (userId == null)
@@ -88,7 +95,7 @@ namespace Bug_Tracker.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = nameof(UserRoles.Admin))]
+        [BugTrackerFiltersAuthorization(Roles = nameof(UserRoles.Admin))]
         public ActionResult EditRoles(string userId, List<string> roles)
         {
             if (roles == null)
@@ -133,7 +140,7 @@ namespace Bug_Tracker.Controllers
 
 
         [HttpGet]
-        [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
+        [BugTrackerFiltersAuthorization(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
         public ActionResult CreateProject()
         {
             var users = (from u in DbContext.Users
@@ -149,7 +156,7 @@ namespace Bug_Tracker.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
+        [BugTrackerFiltersAuthorization(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
         public ActionResult CreateProject(CreateProjectViewModel model, List<string> userIds)
         {
             var users = (from u in DbContext.Users
@@ -186,7 +193,7 @@ namespace Bug_Tracker.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
+        [BugTrackerFiltersAuthorization(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
         public ActionResult ViewAllProjects()
         {
             var model = (from p in DbContext.Projects
@@ -229,7 +236,7 @@ namespace Bug_Tracker.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
+        [BugTrackerFiltersAuthorization(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
         public ActionResult EditProject(int? Id)
         {
             if (Id == null)
@@ -254,7 +261,7 @@ namespace Bug_Tracker.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
+        [BugTrackerFiltersAuthorization(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
         public ActionResult EditProject(int Id, EditProjectViewModel model)
         {
             if (!ModelState.IsValid)
@@ -276,7 +283,7 @@ namespace Bug_Tracker.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
+        [BugTrackerFiltersAuthorization(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
         public ActionResult EditMembers(int? Id)
         {
             if (Id == null)
@@ -315,7 +322,7 @@ namespace Bug_Tracker.Controllers
             return View(model);
         }
 
-        [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
+        [BugTrackerFiltersAuthorization(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
         public ActionResult Assign(int projectId, string userId)
         {
             var project = (from p in DbContext.Projects
@@ -357,7 +364,7 @@ namespace Bug_Tracker.Controllers
             return RedirectToAction(nameof(BugController.EditMembers), "Bug", model);
         }
 
-        [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
+        [BugTrackerFiltersAuthorization(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
         public ActionResult Unassign(int projectId, string userId)
         {
             var project = (from p in DbContext.Projects
@@ -426,7 +433,7 @@ namespace Bug_Tracker.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = nameof(UserRoles.Submitter))]
+        [BugTrackerFiltersAuthorization(Roles = nameof(UserRoles.Submitter))]
         public ActionResult CreateTicket()
         {
             var userId = User.Identity.GetUserId();
@@ -456,7 +463,7 @@ namespace Bug_Tracker.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = nameof(UserRoles.Submitter))]
+        [BugTrackerFiltersAuthorization(Roles = nameof(UserRoles.Submitter))]
         public ActionResult CreateTicket(CreateTicketViewModel model)
         {
             if (!ModelState.IsValid)
@@ -489,7 +496,7 @@ namespace Bug_Tracker.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = nameof(UserRoles.Submitter))]
+        [BugTrackerFiltersAuthorization(Roles = nameof(UserRoles.Submitter))]
         public ActionResult ViewMyCreatedTickets()
         {
             var userId = User.Identity.GetUserId();
@@ -504,7 +511,7 @@ namespace Bug_Tracker.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
+        [BugTrackerFiltersAuthorization(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
         public ActionResult AssignTicket(int? Id)
         {
             if (!Id.HasValue)
@@ -540,7 +547,7 @@ namespace Bug_Tracker.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
+        [BugTrackerFiltersAuthorization(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
         public ActionResult AssignTicket(AssignTicketViewModel model)
         {
             var ticket = (from t in DbContext.Tickets
@@ -560,7 +567,7 @@ namespace Bug_Tracker.Controllers
             return RedirectToAction(nameof(BugController.ViewAllTickets), "Bug");
         }
 
-        [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
+        [BugTrackerFiltersAuthorization(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
         public ActionResult UnAssignTicket(int Id)
         {
             var ticket = (from t in DbContext.Tickets
@@ -574,7 +581,7 @@ namespace Bug_Tracker.Controllers
             return RedirectToAction(nameof(BugController.ViewAllTickets), "Bug");
         }
         [HttpGet]
-        [Authorize(Roles = nameof(UserRoles.Submitter) + "," + nameof(UserRoles.Developer))]
+        [BugTrackerFiltersAuthorization(Roles = nameof(UserRoles.Submitter) + "," + nameof(UserRoles.Developer))]
         public ActionResult ViewMyProjectsTickets()
         {
             var userId = User.Identity.GetUserId();
@@ -598,7 +605,7 @@ namespace Bug_Tracker.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = nameof(UserRoles.Developer))]
+        [BugTrackerFiltersAuthorization(Roles = nameof(UserRoles.Developer))]
         public ActionResult ViewMyAssignedTickets()
         {
             var userId = User.Identity.GetUserId();
@@ -613,7 +620,7 @@ namespace Bug_Tracker.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
+        [BugTrackerFiltersAuthorization(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
         public ActionResult ViewAllTickets()
         {
             var AllTickets = (from t in DbContext.Tickets
