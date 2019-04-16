@@ -12,6 +12,7 @@ using Bug_Tracker.Models;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Bug_Tracker.Enums;
 using Bug_Tracker.Models.Filters;
+using Bug_Tracker.Models.Domain;
 
 namespace Bug_Tracker.Controllers
 {
@@ -83,6 +84,16 @@ namespace Bug_Tracker.Controllers
             switch (result)
             {
                 case SignInStatus.Success:
+                    var context = new ApplicationDbContext();
+                    var log = new UserLog();
+
+                    log.UserName = model.Email;
+                    log.ActionName = "Login";
+                    log.ControllerName = "Account";
+                    log.Time = DateTime.Now;
+
+                    context.UserLogs.Add(log);
+                    context.SaveChanges();
                     return RedirectToLocal(returnUrl);
                 case SignInStatus.LockedOut:
                     return View("Lockout");
@@ -136,7 +147,7 @@ namespace Bug_Tracker.Controllers
                     ModelState.AddModelError("", "Invalid code.");
                     return View(model);
             }
-        }       
+        }
 
         //
         // GET: /Account/Register
@@ -155,7 +166,7 @@ namespace Bug_Tracker.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser {Name = model.Name, UserName = model.Email, Email = model.Email };
+                var user = new ApplicationUser { Name = model.Name, UserName = model.Email, Email = model.Email };
 
                 var result = await UserManager.CreateAsync(user, model.Password);
 

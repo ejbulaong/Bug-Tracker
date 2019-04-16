@@ -14,25 +14,25 @@ namespace Bug_Tracker.Models.Filters
             var context = new ApplicationDbContext();
             var user = filterContext.HttpContext.User.Identity.Name;
 
-            var log = new UserLog();
+            if (filterContext.HttpContext.User.Identity.IsAuthenticated)
+            {
+                var log = new UserLog();
+                log.UserName = user;
 
-            log.UserName = user;
+                log.ActionName = filterContext
+                    .ActionDescriptor
+                    .ActionName;
 
-            log.ActionName = filterContext
-                .ActionDescriptor
-                .ActionName;
+                log.ControllerName = filterContext
+                    .ActionDescriptor
+                    .ControllerDescriptor
+                    .ControllerName;
 
-            log.ControllerName = filterContext
-                .ActionDescriptor
-                .ControllerDescriptor
-                .ControllerName;
+                log.Time = DateTime.Now;
 
-            log.Time = DateTime.Now;
-
-            context.UserLogs.Add(log);
-            context.SaveChanges();
-
-            context.SaveChanges();
+                context.UserLogs.Add(log);
+                context.SaveChanges();
+            }
         }
     }
 }

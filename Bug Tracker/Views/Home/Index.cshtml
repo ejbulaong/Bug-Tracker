@@ -24,32 +24,57 @@
     </div>
     <hr class="sidebar-divider">
     <div class="row">
-        <div class="col-2">
-            <a href="#" title="My Tickets">
-                <i class="fas fa-fw fa-ticket-alt dashboard-icon" id="my-tickets"></i>
-                <h5>My Tickets</h5>
-            </a>
-        </div>
+        @if (User.IsInRole(nameof(UserRoles.Submitter)))
+        {
+            <div class="col-2">
+                <a href="@Url.Action(nameof(BugController.ViewMyCreatedTickets),"Bug")" title="My Tickets">
+                    <i class="fas fa-fw fa-ticket-alt dashboard-icon" id="my-tickets"></i>
+                    <h5>My Created Tickets</h5>
+                </a>
+            </div>
+        }
+
         @if (User.IsInRole(nameof(UserRoles.Admin)) || User.IsInRole(nameof(UserRoles.ProjectManager)))
         {
             <div class="col-2">
-                <a href="#" title="All Tickets">
+                <a href="@Url.Action(nameof(BugController.ViewAllTickets),"Bug")" title="All Tickets">
                     <i class="fas fa-fw fa-ticket-alt dashboard-icon" id="all-tickets"></i>
                     <h5>All Tickets</h5>
                 </a>
             </div>
         }
+
+        @if (User.IsInRole(nameof(UserRoles.Developer)) || User.IsInRole(nameof(UserRoles.Submitter)))
+        {
+            <div class="col-2">
+                <a href="@Url.Action(nameof(BugController.ViewMyProjectsTickets),"Bug")" title="All Tickets">
+                    <i class="fas fa-fw fa-ticket-alt dashboard-icon" id="all-tickets"></i>
+                    <h5>My Project's Tickets</h5>
+                </a>
+            </div>
+        }
+
+        @if (User.IsInRole(nameof(UserRoles.Developer)))
+        {
+            <div class="col-2">
+                <a href="@Url.Action(nameof(BugController.ViewMyAssignedTickets),"Bug")" title="All Tickets">
+                    <i class="fas fa-fw fa-ticket-alt dashboard-icon" id="all-tickets"></i>
+                    <h5>Tickets Assigned To Me</h5>
+                </a>
+            </div>
+        }
+
     </div>
     <hr class="sidebar-divider">
-    @if(User.IsInRole(nameof(UserRoles.Admin)))
+    @if (User.IsInRole(nameof(UserRoles.Admin)))
     {
-    <div class="row">
-        <div class="col-2">
-            <a href="@Url.Action("ManageUsers","Bug")" title="Manage Users">
-                <i class="fas fa-users dashboard-icon" id="manage-users"></i>
-                <h5>Manage Users</h5>
-            </a>
+        <div class="row">
+            <div class="col-2">
+                <a href="@Url.Action("ManageUsers","Bug")" title="Manage Users">
+                    <i class="fas fa-users dashboard-icon" id="manage-users"></i>
+                    <h5>Manage Users</h5>
+                </a>
+            </div>
         </div>
-    </div>
     }
 </div>

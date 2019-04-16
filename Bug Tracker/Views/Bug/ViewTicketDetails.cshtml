@@ -98,8 +98,8 @@
 
                 <form action="@Url.Action(nameof(BugController.AddComment),"Bug",new {Id = Model.Id, model = Model})">
                     <div class="form-group">
-                        <input type="text" class="form-control" placeholder="Enter comment" name="comment">
-                        <button type="submit" class="btn btn-primary">Add Comment</button>
+                        <input type="text" class="form-control d-inline" placeholder="Enter comment" name="comment">
+                        <button type="submit" class="btn btn-primary d-inline">Add Comment</button>
                     </div>
                 </form>
             </div>
