@@ -16,6 +16,7 @@ using Bug_Tracker.Models.Filters;
 
 namespace Bug_Tracker.Controllers
 {
+    [UserLogFilters]
     public class BugController : Controller
     {
         private ApplicationDbContext DbContext;
@@ -894,6 +895,25 @@ namespace Bug_Tracker.Controllers
             var model = MakeTicketViewModel(ticket);
 
             return RedirectToAction(nameof(BugController.ViewTicketDetails), "Bug", model);
+        }
+
+        [Authorize]
+        public ActionResult ActivityLog()
+        {
+            var userId = User.Identity.GetUserId();
+            var user = GetUserById(userId);
+
+            var activityLogs = (from a in DbContext.UserLogs
+                                where a.UserName == user.UserName
+                                select a).ToList();
+
+            var model = new ActivityLogViewModel()
+            {
+                UserName = user.UserName,
+                UserLogs = activityLogs
+            };
+
+            return View(model);
         }
 
         private TicketViewModel MakeTicketViewModel(Ticket ticket)

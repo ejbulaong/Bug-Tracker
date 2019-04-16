@@ -195,10 +195,13 @@
     <Compile Include="Models\Domain\TicketPriority.cs" />
     <Compile Include="Models\Domain\TicketStatus.cs" />
     <Compile Include="Models\Domain\TicketType.cs" />
+    <Compile Include="Models\Domain\UserLog.cs" />
     <Compile Include="Models\EmailService.cs" />
     <Compile Include="Models\Filters\BugTrackerFiltersAuthorization.cs" />
+    <Compile Include="Models\Filters\UserLogFilters.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\ViewModels\ActivityLogViewModel.cs" />
     <Compile Include="Models\ViewModels\AssignTicketViewModel.cs" />
     <Compile Include="Models\ViewModels\CreateProjectViewModel.cs" />
     <Compile Include="Models\ViewModels\CreateTicketViewModel.cs" />
@@ -2076,6 +2079,7 @@
     <Content Include="Views\Bug\EditTicket.cshtml" />
     <Content Include="Views\Bug\ViewTicketDetails.cshtml" />
     <Content Include="Views\Bug\UnAuthorizeAccess.cshtml" />
+    <Content Include="Views\Bug\ActivityLog.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

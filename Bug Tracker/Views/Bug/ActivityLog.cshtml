@@ -1,0 +1,37 @@
+﻿@model ActivityLogViewModel
+@{
+    ViewBag.Title = "ActivityLog";
+}
+
+<h2>Activity Log</h2>
+
+<!-- DataTales Example -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">@Model.UserName</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>ControllerName</th>
+                        <th>ActionName</th>
+                        <th>Date/Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var m in Model.UserLogs)
+                    {
+                        <tr>
+                            <td class="td-center">@m.ControllerName</td>
+                            <td class="td-center">@m.ActionName</td>
+                            <td class="td-center">@m.Time</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+

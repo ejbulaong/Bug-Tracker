@@ -7,10 +7,12 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Bug_Tracker.Models;
+using Bug_Tracker.Models.Filters;
 
 namespace Bug_Tracker.Controllers
 {
     [Authorize]
+    [UserLogFilters]
     public class ManageController : Controller
     {
         private ApplicationSignInManager _signInManager;

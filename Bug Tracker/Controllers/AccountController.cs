@@ -11,10 +11,12 @@ using Microsoft.Owin.Security;
 using Bug_Tracker.Models;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Bug_Tracker.Enums;
+using Bug_Tracker.Models.Filters;
 
 namespace Bug_Tracker.Controllers
 {
     [Authorize]
+    [UserLogFilters]
     public class AccountController : Controller
     {
         private ApplicationSignInManager _signInManager;
