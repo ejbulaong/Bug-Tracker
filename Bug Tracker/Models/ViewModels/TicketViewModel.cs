@@ -6,7 +6,7 @@ using System.Web;
 
 namespace Bug_Tracker.Models.ViewModels
 {
-    public class TicketsViewModel
+    public class TicketViewModel
     {
         public int Id { get; set; }
         public string Title { get; set; }

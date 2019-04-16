@@ -9,7 +9,7 @@ namespace Bug_Tracker.Models.ViewModels
     {
         public int Id { get; set; }
         public string Title { get; set; }
-        public ApplicationUser AssignedDeveloper { get; set; }
+        public virtual ApplicationUser AssignedDeveloper { get; set; }
         public string AssignedDeveloperId { get; set; }
         public List<ApplicationUser> Developers { get; set; }
     }

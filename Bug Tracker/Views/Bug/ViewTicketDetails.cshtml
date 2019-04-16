@@ -1,4 +1,4 @@
-﻿@model TicketsViewModel
+﻿@model TicketViewModel
 @{
     ViewBag.Title = "ViewTicketDetails";
 }
@@ -48,9 +48,14 @@
                 </form>
                 @foreach (var a in Model.Attachments)
                 {
-                    <a class="d-block" href="@Url.Content(a.FilePath)">
-                        @a.FileName
-                    </a>
+                    <div class="d-block">
+                        <a href="@Url.Content(a.FilePath)">
+                            @a.FileName
+                        </a>
+                        <a href="@Url.Action(nameof(BugController.RemoveAttachment),"Bug",new {Id=a.Id,ticketId=Model.Id })" title="Remove Attachment">
+                            <i class="fas fa-minus-square"></i>
+                        </a>
+                    </div>
                 }
             </div>
         </div>

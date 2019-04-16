@@ -46,6 +46,7 @@ namespace Bug_Tracker.Models
         public DbSet<TicketStatus> TicketStatuses { get; set; }
         public DbSet<TicketType> TicketTypes { get; set; }
         public DbSet<TicketComment> TicketComments { get; set; }
+        public DbSet<TicketAttachment> TicketAttachments { get; set; }
 
         public static ApplicationDbContext Create()
         {

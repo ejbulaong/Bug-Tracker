@@ -1,4 +1,4 @@
-﻿@model List<TicketsViewModel>
+﻿@model List<TicketViewModel>
 @{
     ViewBag.Title = "ViewMyTickets";
 }
@@ -56,7 +56,7 @@
                                 <td class="td-center">
                                     N/A
                                     <a href="@Url.Action(nameof(BugController.AssignTicket),"Bug",new {Id=m.Id })" title="Assign Developer">
-                                        <i class="fas fa-user-plus"></i>
+                                        <i class="fas fa-user-plus d-block"></i>
                                     </a>
                                 </td>
                             }
@@ -65,7 +65,7 @@
                                 <td class="td-center">
                                     @m.AssignedDeveloper.Name
                                 <a href="@Url.Action(nameof(BugController.UnAssignTicket),"Bug",new {Id=m.Id })" title="Unassign Developer">
-                                    <i class="fas fa-user-minus"></i>
+                                    <i class="fas fa-user-minus d-block"></i>
                                 </a>
                             </td>
                         }

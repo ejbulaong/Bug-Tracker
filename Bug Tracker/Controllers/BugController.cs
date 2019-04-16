@@ -19,10 +19,13 @@ namespace Bug_Tracker.Controllers
     public class BugController : Controller
     {
         private ApplicationDbContext DbContext;
+        private UserManager<ApplicationUser> UserManager;
 
         public BugController()
         {
             DbContext = new ApplicationDbContext();
+            UserManager = new UserManager<ApplicationUser>(
+                        new UserStore<ApplicationUser>(DbContext));
         }
 
         public ActionResult Index()
@@ -32,7 +35,6 @@ namespace Bug_Tracker.Controllers
 
         public ActionResult UnAuthorizeAccess()
         {
-
             return View();
         }
 
@@ -40,10 +42,6 @@ namespace Bug_Tracker.Controllers
         [BugTrackerFiltersAuthorization(Roles = nameof(UserRoles.Admin))]
         public ActionResult ManageUsers()
         {
-            var userManager =
-                new UserManager<ApplicationUser>(
-                        new UserStore<ApplicationUser>(DbContext));
-
             var model = new List<ManageUsersViewModel>();
 
             foreach (var user in DbContext.Users)
@@ -63,7 +61,7 @@ namespace Bug_Tracker.Controllers
                               where u.UserName == m.UserName
                               select u.Id).FirstOrDefault();
 
-                m.Roles = userManager.GetRoles(userId);
+                m.Roles = UserManager.GetRoles(userId);
             }
             return View(model);
         }
@@ -76,11 +74,8 @@ namespace Bug_Tracker.Controllers
             {
                 return RedirectToAction(nameof(HomeController.Index), "Home");
             }
-            var userManager =
-                new UserManager<ApplicationUser>(
-                        new UserStore<ApplicationUser>(DbContext));
 
-            var userRoles = userManager.GetRoles(userId);
+            var userRoles = UserManager.GetRoles(userId);
 
 
             var model = (from u in DbContext.Users
@@ -104,20 +99,16 @@ namespace Bug_Tracker.Controllers
                 roles.Add(nameof(UserRoles.Submitter)); // setting Submitter as the default role for user if no role is chosen
             }
 
-            var userManager =
-                new UserManager<ApplicationUser>(
-                        new UserStore<ApplicationUser>(DbContext));
-
-            var userRoles = userManager.GetRoles(userId);
+            var userRoles = UserManager.GetRoles(userId);
 
             foreach (var role in userRoles)
             {
-                userManager.RemoveFromRole(userId, role);
+                UserManager.RemoveFromRole(userId, role);
             }
 
             foreach (var role in roles)
             {
-                userManager.AddToRoles(userId, role);
+                UserManager.AddToRoles(userId, role);
             }
 
             DbContext.SaveChanges();
@@ -143,9 +134,7 @@ namespace Bug_Tracker.Controllers
         [BugTrackerFiltersAuthorization(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
         public ActionResult CreateProject()
         {
-            var users = (from u in DbContext.Users
-                         where u != null
-                         select u).ToList();
+            var users = GetAllUsers();
 
             var model = new CreateProjectViewModel()
             {
@@ -159,9 +148,8 @@ namespace Bug_Tracker.Controllers
         [BugTrackerFiltersAuthorization(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
         public ActionResult CreateProject(CreateProjectViewModel model, List<string> userIds)
         {
-            var users = (from u in DbContext.Users
-                         where u != null
-                         select u).ToList();
+            var users = GetAllUsers();
+
             var members = new List<ApplicationUser>();
 
             if (userIds == null)
@@ -297,9 +285,7 @@ namespace Bug_Tracker.Controllers
 
             var memberUsers = project.Users;
             var nonMemberUsers = new List<ApplicationUser>();
-            var allUsers = (from u in DbContext.Users
-                            where u != null
-                            select u).ToList();
+            var allUsers = GetAllUsers();
 
             foreach (var u in allUsers)
             {
@@ -329,9 +315,7 @@ namespace Bug_Tracker.Controllers
                            where p.Id == projectId
                            select p).FirstOrDefault();
 
-            var user = (from u in DbContext.Users
-                        where u.Id == userId
-                        select u).FirstOrDefault();
+            var user = GetUserById(userId);
 
             project.Users.Add(user);
             DbContext.SaveChanges();
@@ -339,9 +323,7 @@ namespace Bug_Tracker.Controllers
             var memberUsers = project.Users;
 
             var nonMemberUsers = new List<ApplicationUser>();
-            var allUsers = (from u in DbContext.Users
-                            where u != null
-                            select u).ToList();
+            var allUsers = GetAllUsers();
 
             foreach (var u in allUsers)
             {
@@ -371,9 +353,7 @@ namespace Bug_Tracker.Controllers
                            where p.Id == projectId
                            select p).FirstOrDefault();
 
-            var user = (from u in DbContext.Users
-                        where u.Id == userId
-                        select u).FirstOrDefault();
+            var user = GetUserById(userId);
 
             project.Users.Remove(user);
             DbContext.SaveChanges();
@@ -381,9 +361,7 @@ namespace Bug_Tracker.Controllers
             var memberUsers = project.Users;
 
             var nonMemberUsers = new List<ApplicationUser>();
-            var allUsers = (from u in DbContext.Users
-                            where u != null
-                            select u).ToList();
+            var allUsers = GetAllUsers();
 
             foreach (var u in allUsers)
             {
@@ -472,7 +450,7 @@ namespace Bug_Tracker.Controllers
             }
 
             var userId = User.Identity.GetUserId();
-            var user = DbContext.Users.FirstOrDefault(u => u.Id == userId);
+            var user = GetUserById(userId);
             var type = DbContext.TicketTypes.FirstOrDefault(t => t.Id == model.TypeId);
             var status = DbContext.TicketStatuses.FirstOrDefault(s => s.Name == nameof(EnumTicketStatuses.Open).ToString());
             var priority = DbContext.TicketPriorities.FirstOrDefault(p => p.Id == model.PriorityId);
@@ -505,7 +483,12 @@ namespace Bug_Tracker.Controllers
                              where u.Id == userId
                              select u.CreatedTickets).FirstOrDefault();
 
-            var model = MakeTicketViewModel(myTickets);
+            var model = new List<TicketViewModel>();
+
+            foreach (var t in myTickets)
+            {
+                model.Add(MakeTicketViewModel(t));
+            }
 
             return View(model);
         }
@@ -518,10 +501,6 @@ namespace Bug_Tracker.Controllers
             {
                 return RedirectToAction(nameof(HomeController.Index), "Home");
             }
-
-            var userManager =
-                new UserManager<ApplicationUser>(
-                        new UserStore<ApplicationUser>(DbContext));
 
             var devRoleId = (from r in DbContext.Roles
                              where r.Name == nameof(UserRoles.Developer)
@@ -591,6 +570,7 @@ namespace Bug_Tracker.Controllers
                               select u.Projects).FirstOrDefault();
 
             var listOfTickets = new List<Ticket>();
+
             foreach (var p in myProjects)
             {
                 foreach (var t in p.Tickets)
@@ -599,7 +579,12 @@ namespace Bug_Tracker.Controllers
                 }
             }
 
-            var model = MakeTicketViewModel(listOfTickets);
+            var model = new List<TicketViewModel>();
+
+            foreach (var t in listOfTickets)
+            {
+                model.Add(MakeTicketViewModel(t));
+            }
 
             return View(model);
         }
@@ -614,7 +599,12 @@ namespace Bug_Tracker.Controllers
                                    where u.Id == userId
                                    select u.AssignedTickets).FirstOrDefault();
 
-            var model = MakeTicketViewModel(assignedTickets);
+            var model = new List<TicketViewModel>();
+
+            foreach (var t in assignedTickets)
+            {
+                model.Add(MakeTicketViewModel(t));
+            }
 
             return View(model);
         }
@@ -627,7 +617,12 @@ namespace Bug_Tracker.Controllers
                               where t != null
                               select t).ToList();
 
-            var model = MakeTicketViewModel(AllTickets);
+            var model = new List<TicketViewModel>();
+
+            foreach (var t in AllTickets)
+            {
+                model.Add(MakeTicketViewModel(t));
+            }
 
             return View(model);
         }
@@ -642,9 +637,7 @@ namespace Bug_Tracker.Controllers
             }
             var userId = User.Identity.GetUserId();
 
-            var user = (from u in DbContext.Users
-                        where u.Id == userId
-                        select u).FirstOrDefault();
+            var user = GetUserById(userId);
 
             var ticketToEdit = (from t in DbContext.Tickets
                                 where t.Id == Id
@@ -763,9 +756,7 @@ namespace Bug_Tracker.Controllers
             }
             var userId = User.Identity.GetUserId();
 
-            var user = (from u in DbContext.Users
-                        where u.Id == userId
-                        select u).FirstOrDefault();
+            var user = GetUserById(userId);
 
             var ticket = (from t in DbContext.Tickets
                           where t.Id == Id
@@ -775,23 +766,7 @@ namespace Bug_Tracker.Controllers
             {
                 return RedirectToAction(nameof(HomeController.Index), "Home");
             }
-
-            var model = new TicketsViewModel()
-            {
-                Id = ticket.Id,
-                Title = ticket.Title,
-                Description = ticket.Description,
-                DateCreated = ticket.DateCreated,
-                DateUpdated = ticket.DateUpdated,
-                Project = ticket.Project,
-                Type = ticket.Type,
-                Priority = ticket.Priority,
-                Status = ticket.Status,
-                Creator = ticket.Creator,
-                AssignedDeveloper = ticket.AssignedDeveloper,
-                Comments = ticket.Comments,
-                Attachments = ticket.Attachments
-            };
+            var model = MakeTicketViewModel(ticket);
 
             return View(model);
         }
@@ -811,9 +786,7 @@ namespace Bug_Tracker.Controllers
 
             var userId = User.Identity.GetUserId();
 
-            var user = (from u in DbContext.Users
-                        where u.Id == userId
-                        select u).FirstOrDefault();
+            var user = GetUserById(userId);
 
             if (User.IsInRole(nameof(UserRoles.Submitter)) && !user.CreatedTickets.Contains(ticket))
             {
@@ -829,42 +802,54 @@ namespace Bug_Tracker.Controllers
             {
                 var uploadFolder = "~/Uploads/";
                 var mappedFolder = Server.MapPath(uploadFolder);
+                var newFileName = Guid.NewGuid().ToString();
 
                 if (!Directory.Exists(mappedFolder))
                 {
                     Directory.CreateDirectory(mappedFolder);
                 }
 
-                file.SaveAs(mappedFolder + file.FileName);
-
                 var newAttachment = new TicketAttachment()
                 {
-                    FileName = file.FileName,
-                    FilePath = uploadFolder + file.FileName,
+                    FileName = newFileName + file.FileName,
+                    FilePath = uploadFolder + newFileName + file.FileName,
                     DateCreated = DateTime.Now,
                     Ticket = ticket,
                     User = user
                 };
+
+                file.SaveAs(mappedFolder + newFileName + file.FileName);
                 ticket.Attachments.Add(newAttachment);
                 DbContext.SaveChanges();
             }
 
-            var model = new TicketsViewModel()
+            var model = MakeTicketViewModel(ticket);
+
+            return RedirectToAction(nameof(BugController.ViewTicketDetails), "Bug", model);
+        }
+
+        public ActionResult RemoveAttachment(int? Id, int? ticketId)
+        {
+            var ticket = (from t in DbContext.Tickets
+                          where t.Id == ticketId
+                          select t).FirstOrDefault();
+
+            var attachment = (from a in DbContext.TicketAttachments
+                              where a.Id == Id
+                              select a).FirstOrDefault();
+
+
+            string fullPath = Request.MapPath("~/Uploads/" + attachment.FileName);
+
+            if (System.IO.File.Exists(fullPath))
             {
-                Id = ticket.Id,
-                Title = ticket.Title,
-                Description = ticket.Description,
-                DateCreated = ticket.DateCreated,
-                DateUpdated = ticket.DateUpdated,
-                Project = ticket.Project,
-                Type = ticket.Type,
-                Priority = ticket.Priority,
-                Status = ticket.Status,
-                Creator = ticket.Creator,
-                AssignedDeveloper = ticket.AssignedDeveloper,
-                Comments = ticket.Comments,
-                Attachments = ticket.Attachments
-            };
+                System.IO.File.Delete(fullPath);
+            }
+
+            DbContext.TicketAttachments.Remove(attachment);
+            DbContext.SaveChanges();
+
+            var model = MakeTicketViewModel(ticket);
 
             return RedirectToAction(nameof(BugController.ViewTicketDetails), "Bug", model);
         }
@@ -883,9 +868,7 @@ namespace Bug_Tracker.Controllers
 
             var userId = User.Identity.GetUserId();
 
-            var user = (from u in DbContext.Users
-                        where u.Id == userId
-                        select u).FirstOrDefault();
+            var user = GetUserById(userId);
 
             if (User.IsInRole(nameof(UserRoles.Submitter)) && !user.CreatedTickets.Contains(ticket))
             {
@@ -903,10 +886,19 @@ namespace Bug_Tracker.Controllers
                 DateCreated = DateTime.Now,
                 User = user
             };
+
             ticket.Comments.Add(newComment);
+
             DbContext.SaveChanges();
 
-            var model = new TicketsViewModel()
+            var model = MakeTicketViewModel(ticket);
+
+            return RedirectToAction(nameof(BugController.ViewTicketDetails), "Bug", model);
+        }
+
+        private TicketViewModel MakeTicketViewModel(Ticket ticket)
+        {
+            var model = new TicketViewModel()
             {
                 Id = ticket.Id,
                 Title = ticket.Title,
@@ -919,79 +911,29 @@ namespace Bug_Tracker.Controllers
                 Status = ticket.Status,
                 Creator = ticket.Creator,
                 AssignedDeveloper = ticket.AssignedDeveloper,
-                Comments = ticket.Comments
+                Comments = ticket.Comments,
+                Attachments = ticket.Attachments
             };
-
-            return RedirectToAction(nameof(BugController.ViewTicketDetails), "Bug", model);
-        }
-
-        private List<TicketsViewModel> MakeTicketViewModel(List<Ticket> ticketList)
-        {
-            var model = new List<TicketsViewModel>();
-
-            foreach (var t in ticketList)
-            {
-                var project = (from p in DbContext.Projects
-                               where p.Id == t.ProjectId
-                               select p).FirstOrDefault();
-
-                var type = (from p in DbContext.TicketTypes
-                            where p.Id == t.TypeId
-                            select p).FirstOrDefault();
-
-                var status = (from p in DbContext.TicketStatuses
-                              where p.Id == t.StatusId
-                              select p).FirstOrDefault();
-
-                var priority = (from p in DbContext.TicketPriorities
-                                where p.Id == t.PriorityId
-                                select p).FirstOrDefault();
-
-                var creator = (from p in DbContext.Users
-                               where p.Id == t.CreatorId
-                               select p).FirstOrDefault();
-
-                var assignedDeveloper = (from p in DbContext.Users
-                                         where p.Id == t.AssignedDeveloperId
-                                         select p).FirstOrDefault();
-
-                model.Add(new TicketsViewModel()
-                {
-                    Id = t.Id,
-                    Title = t.Title,
-                    Description = t.Description,
-                    DateCreated = t.DateCreated,
-                    DateUpdated = t.DateUpdated,
-                    Project = project,
-                    Type = type,
-                    Priority = priority,
-                    Status = status,
-                    Creator = creator,
-                    AssignedDeveloper = assignedDeveloper
-                });
-            }
 
             return model;
         }
 
-        private string UploadFile(HttpPostedFileBase file)
+        private List<ApplicationUser> GetAllUsers()
         {
-            if (file != null)
-            {
-                var uploadFolder = "~/Upload/";
-                var mappedFolder = Server.MapPath(uploadFolder);
+            var allUsers = (from u in DbContext.Users
+                            where u != null
+                            select u).ToList();
 
-                if (!Directory.Exists(mappedFolder))
-                {
-                    Directory.CreateDirectory(mappedFolder);
-                }
+            return allUsers;
+        }
 
-                file.SaveAs(mappedFolder + file.FileName);
+        private ApplicationUser GetUserById(string Id)
+        {
+            var user = (from u in DbContext.Users
+                        where u.Id == Id
+                        select u).FirstOrDefault();
 
-                return uploadFolder + file.FileName;
-            }
-
-            return null;
+            return user;
         }
     }
 }
