@@ -24,6 +24,15 @@
     </div>
     <hr class="sidebar-divider">
     <div class="row">
+        @if (!User.Identity.IsAuthenticated)
+        {
+            <div class="col-2">
+                <a href="@Url.Action(nameof(BugController.ViewMyCreatedTickets),"Bug")" title="My Tickets">
+                    <i class="fas fa-fw fa-ticket-alt dashboard-icon" id="my-tickets"></i>
+                    <h5>My Tickets</h5>
+                </a>
+            </div>
+        }
         @if (User.IsInRole(nameof(UserRoles.Submitter)))
         {
             <div class="col-2">

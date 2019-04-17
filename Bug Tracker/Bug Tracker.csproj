@@ -188,6 +188,7 @@
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\Domain\ExceptionLog.cs" />
     <Compile Include="Models\Domain\TicketAttachment.cs" />
     <Compile Include="Models\Domain\TicketComment.cs" />
     <Compile Include="Models\Domain\Project.cs" />
@@ -198,6 +199,7 @@
     <Compile Include="Models\Domain\UserLog.cs" />
     <Compile Include="Models\EmailService.cs" />
     <Compile Include="Models\Filters\BugTrackerFiltersAuthorization.cs" />
+    <Compile Include="Models\Filters\ExceptionLogFilter.cs" />
     <Compile Include="Models\Filters\UserLogFilters.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
