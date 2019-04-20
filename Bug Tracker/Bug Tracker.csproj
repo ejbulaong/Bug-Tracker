@@ -230,6 +230,8 @@
     <Content Include="Content\css\sb-admin-2.css" />
     <Content Include="Content\css\sb-admin-2.min.css" />
     <Content Include="Content\img\undraw_posting_photo.svg" />
+    <Content Include="Content\img\user.jpg" />
+    <Content Include="Content\img\user1.png" />
     <Content Include="Content\js\bugtracker.js" />
     <Content Include="Content\js\demo\chart-area-demo.js" />
     <Content Include="Content\js\demo\chart-bar-demo.js" />
@@ -1800,6 +1802,7 @@
     <Content Include="Content\vendor\fontawesome-free\webfonts\fa-brands-400.svg" />
     <Content Include="Content\vendor\fontawesome-free\webfonts\fa-regular-400.svg" />
     <Content Include="Content\vendor\fontawesome-free\webfonts\fa-solid-900.svg" />
+    <Content Include="Content\vendor\fontawesome-free\webfonts\fa-solid-900.woff2" />
     <Content Include="Content\vendor\jquery-easing\jquery.easing.compatibility.js" />
     <Content Include="Content\vendor\jquery-easing\jquery.easing.js" />
     <Content Include="Content\vendor\jquery-easing\jquery.easing.min.js" />
@@ -1996,9 +1999,9 @@
     <Content Include="Content\vendor\fontawesome-free\webfonts\fa-solid-900.eot" />
     <Content Include="Content\vendor\fontawesome-free\webfonts\fa-solid-900.ttf" />
     <Content Include="Content\vendor\fontawesome-free\webfonts\fa-solid-900.woff" />
-    <Content Include="Content\vendor\fontawesome-free\webfonts\fa-solid-900.woff2" />
     <Content Include="Content\vendor\jquery\jquery.min.map" />
     <Content Include="Content\vendor\jquery\jquery.slim.min.map" />
+    <None Include="Properties\PublishProfiles\ejbulaong-BugTracker - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.3.1.js" />
     <Content Include="Scripts\jquery-3.3.1.min.js" />
