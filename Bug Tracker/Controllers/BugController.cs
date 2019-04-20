@@ -829,6 +829,7 @@ namespace Bug_Tracker.Controllers
             return RedirectToAction(nameof(BugController.ViewTicketDetails), "Bug", model);
         }
 
+        [Authorize]
         public ActionResult RemoveAttachment(int? Id, int? ticketId)
         {
             var ticket = (from t in DbContext.Tickets

@@ -153,7 +153,7 @@ namespace Bug_Tracker.Migrations
             if (!context.TicketStatuses.Any(p => p.Name == nameof(EnumTicketStatuses.Rejected)))
             {
                 var rejected = new TicketStatus();
-                rejected.Name = nameof(EnumTicketStatuses.Resolved);
+                rejected.Name = nameof(EnumTicketStatuses.Rejected);
                 context.TicketStatuses.Add(rejected);
             }
 
