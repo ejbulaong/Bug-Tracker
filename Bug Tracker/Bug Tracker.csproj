@@ -193,6 +193,7 @@
     <Compile Include="Models\Domain\TicketComment.cs" />
     <Compile Include="Models\Domain\Project.cs" />
     <Compile Include="Models\Domain\Ticket.cs" />
+    <Compile Include="Models\Domain\TicketHistory.cs" />
     <Compile Include="Models\Domain\TicketPriority.cs" />
     <Compile Include="Models\Domain\TicketStatus.cs" />
     <Compile Include="Models\Domain\TicketType.cs" />
