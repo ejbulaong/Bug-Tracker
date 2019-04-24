@@ -36,5 +36,7 @@ namespace Bug_Tracker.Models.Domain
         public virtual List<TicketAttachment> Attachments { get; set; }
 
         public virtual List<TicketHistory> Histories { get; set; }
+
+        public virtual List<ApplicationUser> NotificationReceiver { get; set; }
     }
 }

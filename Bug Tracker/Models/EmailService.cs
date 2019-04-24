@@ -27,10 +27,15 @@ namespace Bug_Tracker.Models
         /// <param name="to">The destination of the e-mail</param>
         /// <param name="body">The body of the e-mail</param>
         /// <param name="subject">The subject of the e-mail</param>
-        public void Send(string to, string body, string subject)
+        public void Send(List<string> to, string body, string subject)
         {
             //Creates a MailMessage required to send messages
-            var message = new MailMessage(SmtpFrom, to);
+            var message = new MailMessage();
+            foreach(var e in to)
+            {
+                message.To.Add(e);
+            }
+            message.From = new MailAddress(SmtpFrom);
             message.Body = body;
             message.Subject = subject;
             message.IsBodyHtml = true;
@@ -53,9 +58,10 @@ namespace Bug_Tracker.Models
         /// <returns></returns>
         public Task SendAsync(IdentityMessage message)
         {
+            var to = new List<string>();
             //Caling our sync method in a async way.
             return Task.Run(() =>
-            Send(message.Destination, message.Body, message.Subject));
+            Send(to,message.Body, message.Subject));
         }
     }
 }

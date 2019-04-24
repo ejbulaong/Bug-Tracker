@@ -3,7 +3,27 @@
     ViewBag.Title = "ViewTicketDetails";
 }
 
-<h2>Ticket Details</h2>
+<h2>
+    Ticket Details
+    <a href="@Url.Action(nameof(BugController.EditTicket),"Bug",new {Id=Model.Id })" title="Edit Ticket">
+        <i class="fas fa-edit"></i>
+    </a>
+</h2>
+@if (User.IsInRole(nameof(UserRoles.Admin)) || User.IsInRole(nameof(UserRoles.ProjectManager)))
+{
+    if (Model.Notification)
+    {
+        <a href="@Url.Action(nameof(BugController.ToggleNotification),"Bug",new {Id=Model.Id })" title="Edit Ticket">
+            Turn Off Notifications
+        </a>
+    }
+    else
+    {
+        <a href="@Url.Action(nameof(BugController.ToggleNotification),"Bug",new {Id=Model.Id })" title="Edit Ticket">
+            Turn On Notifications
+        </a>
+    }
+}
 
 <div class="row">
     <div class="col-6">
@@ -27,11 +47,17 @@
                 <h6 class="card-subtitle mb-2 text-muted">Creator: @Model.Creator.Name </h6>
                 @if (Model.AssignedDeveloper != null)
                 {
-                    <h6 class="card-subtitle mb-2 text-muted">Assigned Developer: @Model.AssignedDeveloper.Name </h6>
+                    <h6 class="card-subtitle mb-2 text-muted d-inline">Assigned Developer: @Model.AssignedDeveloper.Name </h6>
+                    <a href="@Url.Action(nameof(BugController.UnAssignTicket),"Bug",new {Id=Model.Id })" title="Unassign Developer">
+                        <i class="fas fa-user-minus d-inline"></i>
+                    </a>
                 }
                 else
                 {
-                    <h6 class="card-subtitle mb-2 text-muted">Assigned Developer: None </h6>
+                    <h6 class="card-subtitle mb-2 text-muted d-inline">Assigned Developer: None </h6>
+                    <a href="@Url.Action(nameof(BugController.AssignTicket),"Bug",new {Id=Model.Id })" title="Assign Developer">
+                        <i class="fas fa-user-plus d-inline"></i>
+                    </a>
                 }
             </div>
         </div>
@@ -84,9 +110,11 @@
                                         <td>
                                             @foreach (var p in m.PropertyChanges)
                                             {
-                                                <span class="d-block"> <strong class="text-primary">@p.PropertyName</strong> changed from 
-                                                    <strong class="text-success">@p.OldValue</strong> into 
-                                                    <strong class="text-danger">@p.NewValue</strong></span>
+                                                <span class="d-block">
+                                                    <strong class="text-primary">@p.PropertyName</strong> changed from
+                                                    <strong class="text-success">@p.OldValue</strong> into
+                                                    <strong class="text-danger">@p.NewValue</strong>
+                                                </span>
                                             }
                                         </td>
                                         <td>

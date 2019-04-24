@@ -553,11 +553,14 @@ namespace Bug_Tracker.Controllers
                 propChange.OldValue = "none";
                 propChange.NewValue = ticket.AssignedDeveloper.Name;
                 newHistory.PropertyChanges.Add(propChange);
-
+                newHistory.User = user;
+                newHistory.DateTime = DateTime.Now;
+                ticket.Histories.Add(newHistory);
+                DbContext.SaveChanges();
                 SendNotification(newHistory, user, ticket);
             }
 
-            return RedirectToAction(nameof(BugController.ViewAllTickets), "Bug");
+            return RedirectToAction(nameof(BugController.ViewTicketDetails), "Bug", new { Id = ticket.Id });
         }
 
         [BugTrackerFiltersAuthorization(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
@@ -575,14 +578,16 @@ namespace Bug_Tracker.Controllers
             propChange.OldValue = ticket.AssignedDeveloper.Name;
             propChange.NewValue = "none";
             newHistory.PropertyChanges.Add(propChange);
-
+            newHistory.User = user;
+            newHistory.DateTime = DateTime.Now;
+            ticket.Histories.Add(newHistory);
             SendNotification(newHistory, user, ticket);
 
             ticket.AssignedDeveloper = null;
             ticket.AssignedDeveloperId = null;
             DbContext.SaveChanges();
 
-            return RedirectToAction(nameof(BugController.ViewAllTickets), "Bug");
+            return RedirectToAction(nameof(BugController.ViewTicketDetails), "Bug", new { Id = ticket.Id });
         }
         [HttpGet]
         [BugTrackerFiltersAuthorization(Roles = nameof(UserRoles.Submitter) + "," + nameof(UserRoles.Developer))]
@@ -817,22 +822,8 @@ namespace Bug_Tracker.Controllers
             ticketToEdit.DateUpdated = DateTime.Now;
             DbContext.SaveChanges();
 
-            if (User.IsInRole(nameof(UserRoles.Admin)) || User.IsInRole(nameof(UserRoles.ProjectManager)))
-            {
-                return RedirectToAction(nameof(BugController.ViewAllTickets), "Bug");
-            }
-            else if (User.IsInRole(nameof(UserRoles.Submitter)))
-            {
-                return RedirectToAction(nameof(BugController.ViewMyCreatedTickets), "Bug");
-            }
-            else if (User.IsInRole(nameof(UserRoles.Developer)))
-            {
-                return RedirectToAction(nameof(BugController.ViewMyAssignedTickets), "Bug");
-            }
-            else
-            {
-                return RedirectToAction(nameof(HomeController.Index), "Home");
-            }
+            return RedirectToAction(nameof(BugController.ViewTicketDetails), "Bug", new { Id = ticketToEdit.Id });
+
         }
 
         [HttpGet]
@@ -856,6 +847,14 @@ namespace Bug_Tracker.Controllers
                 return RedirectToAction(nameof(HomeController.Index), "Home");
             }
             var model = MakeTicketViewModel(ticket);
+            if (ticket.NotificationReceiver.Contains(user))
+            {
+                model.Notification = true;
+            }
+            else
+            {
+                model.Notification = false;
+            }
 
             return View(model);
         }
@@ -1006,6 +1005,30 @@ namespace Bug_Tracker.Controllers
             return View(model);
         }
 
+        [BugTrackerFiltersAuthorization(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
+        public ActionResult ToggleNotification(int? Id)
+        {
+            if (Id != null)
+            {
+                var ticket = DbContext.Tickets.FirstOrDefault(t => t.Id == Id);
+                var userId = User.Identity.GetUserId();
+                var user = GetUserById(userId);
+
+                if (ticket.NotificationReceiver.Contains(user))
+                {
+                    ticket.NotificationReceiver.Remove(user);
+                }
+                else
+                {
+                    ticket.NotificationReceiver.Add(user);
+                }
+                DbContext.SaveChanges();
+                return RedirectToAction(nameof(BugController.ViewTicketDetails), "Bug", new { id = ticket.Id });
+            }
+
+            return RedirectToAction(nameof(BugController.Index), "Home");
+        }
+
         private TicketViewModel MakeTicketViewModel(Ticket ticket)
         {
             var model = new TicketViewModel()
@@ -1023,7 +1046,8 @@ namespace Bug_Tracker.Controllers
                 AssignedDeveloper = ticket.AssignedDeveloper,
                 Comments = ticket.Comments,
                 Attachments = ticket.Attachments,
-                Histories = ticket.Histories
+                Histories = ticket.Histories,
+                NotificationReceiver = ticket.NotificationReceiver
             };
 
             return model;
@@ -1053,7 +1077,7 @@ namespace Bug_Tracker.Controllers
             {
                 var subject = $"Ticket Update";
                 var body = $"The following changes are made on ticket <strong>{ticket.Title}</strong> by <strong>{changer.Name}</strong>: <br><br>";
-
+                var to = new List<string>();
                 if (history != null)
                 {
                     foreach (var c in history.PropertyChanges)
@@ -1079,13 +1103,14 @@ namespace Bug_Tracker.Controllers
                     body += newString;
                 }
 
-                var mailMessage = new IdentityMessage();
-                mailMessage.Body = body;
-                mailMessage.Subject = subject;
-                mailMessage.Destination = ticket.AssignedDeveloper.Email;
+                to.Add(ticket.AssignedDeveloper.Email);
+                foreach(var u in ticket.NotificationReceiver)
+                {
+                    to.Add(u.Email);
+                }
 
                 var emailService = new EmailService();
-                emailService.Send(mailMessage);
+                emailService.Send(to,body,subject);
             }
         }
     }

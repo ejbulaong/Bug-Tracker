@@ -22,5 +22,7 @@ namespace Bug_Tracker.Models.ViewModels
         public List<TicketComment> Comments { get; set; }
         public List<TicketAttachment> Attachments { get; set; }
         public List<TicketHistory> Histories { get; set; }
+        public List<ApplicationUser> NotificationReceiver { get; set; }
+        public bool Notification { get; set; }
     }
 }
