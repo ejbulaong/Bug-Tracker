@@ -13,6 +13,7 @@ using System.Web.Security;
 using System.Data.Entity;
 using System.IO;
 using Bug_Tracker.Models.Filters;
+using System.Net.Mail;
 
 namespace Bug_Tracker.Controllers
 {
@@ -502,7 +503,7 @@ namespace Bug_Tracker.Controllers
             {
                 return RedirectToAction(nameof(HomeController.Index), "Home");
             }
-         
+
             var devRoleId = (from r in DbContext.Roles
                              where r.Name == nameof(UserRoles.Developer)
                              select r.Id).FirstOrDefault();
@@ -543,21 +544,17 @@ namespace Bug_Tracker.Controllers
                                  where d.Id == model.AssignedDeveloperId
                                  select d).FirstOrDefault();
 
-                if (ticket.AssignedDeveloper != developer)
-                {
-                    var developerHistory = new TicketHistory()
-                    {
-                        DateTime = DateTime.Now,
-                        User = user,
-                        PropertyChanged = nameof(ticket.AssignedDeveloper),
-                        OldValue = "none",
-                        NewValue = developer.Name
-                    };
-                    ticket.Histories.Add(developerHistory);
-                    ticket.AssignedDeveloper = developer;
-                }
-
+                ticket.AssignedDeveloper = developer;
                 DbContext.SaveChanges();
+
+                var newHistory = new TicketHistory();
+                var propChange = new PropertyChange();
+                propChange.PropertyName = nameof(ticket.AssignedDeveloper);
+                propChange.OldValue = "none";
+                propChange.NewValue = ticket.AssignedDeveloper.Name;
+                newHistory.PropertyChanges.Add(propChange);
+
+                SendNotification(newHistory, user, ticket);
             }
 
             return RedirectToAction(nameof(BugController.ViewAllTickets), "Bug");
@@ -572,15 +569,14 @@ namespace Bug_Tracker.Controllers
             var userid = User.Identity.GetUserId();
             var user = GetUserById(userid);
 
-            var developerHistory = new TicketHistory()
-            {
-                DateTime = DateTime.Now,
-                User = user,
-                PropertyChanged = nameof(ticket.AssignedDeveloper),
-                OldValue = ticket.AssignedDeveloper.Name,
-                NewValue = "none"
-            };
-            ticket.Histories.Add(developerHistory);
+            var newHistory = new TicketHistory();
+            var propChange = new PropertyChange();
+            propChange.PropertyName = nameof(ticket.AssignedDeveloper);
+            propChange.OldValue = ticket.AssignedDeveloper.Name;
+            propChange.NewValue = "none";
+            newHistory.PropertyChanges.Add(propChange);
+
+            SendNotification(newHistory, user, ticket);
 
             ticket.AssignedDeveloper = null;
             ticket.AssignedDeveloperId = null;
@@ -744,95 +740,78 @@ namespace Bug_Tracker.Controllers
 
             var userId = User.Identity.GetUserId();
             var user = GetUserById(userId);
+            var newHistory = new TicketHistory();
 
             if (ticketToEdit.Title != model.Title)
             {
-                var titleHistory = new TicketHistory()
-                {
-                    DateTime = DateTime.Now,
-                    User = user,
-                    PropertyChanged = nameof(ticketToEdit.Title),
-                    OldValue = ticketToEdit.Title,
-                    NewValue = model.Title
-                };
-                ticketToEdit.Histories.Add(titleHistory);
+                var propChange = new PropertyChange();
+                propChange.PropertyName = nameof(ticketToEdit.Title);
+                propChange.OldValue = ticketToEdit.Title;
+                propChange.NewValue = model.Title;
+                newHistory.PropertyChanges.Add(propChange);
                 ticketToEdit.Title = model.Title;
             }
 
             if (ticketToEdit.Project != project)
             {
-                var projectHistory = new TicketHistory()
-                {
-                    DateTime = DateTime.Now,
-                    User = user,
-                    PropertyChanged = nameof(ticketToEdit.Project),
-                    OldValue = ticketToEdit.Project.Name,
-                    NewValue = project.Name
-                };
-                ticketToEdit.Histories.Add(projectHistory);
+                var propChange = new PropertyChange();
+                propChange.PropertyName = nameof(ticketToEdit.Project);
+                propChange.OldValue = ticketToEdit.Project.Name;
+                propChange.NewValue = project.Name;
+                newHistory.PropertyChanges.Add(propChange);
                 ticketToEdit.Project = project;
             }
 
             if (ticketToEdit.Description != model.Description)
             {
-                var descriptionHistory = new TicketHistory()
-                {
-                    DateTime = DateTime.Now,
-                    User = user,
-                    PropertyChanged = nameof(ticketToEdit.Description),
-                    OldValue = ticketToEdit.Description,
-                    NewValue = model.Description
-                };
-                ticketToEdit.Histories.Add(descriptionHistory);
+                var propChange = new PropertyChange();
+                propChange.PropertyName = nameof(ticketToEdit.Description);
+                propChange.OldValue = ticketToEdit.Description;
+                propChange.NewValue = model.Description;
+                newHistory.PropertyChanges.Add(propChange);
                 ticketToEdit.Description = model.Description;
             }
 
             if (ticketToEdit.Type != type)
             {
-                var typeHistory = new TicketHistory()
-                {
-                    DateTime = DateTime.Now,
-                    User = user,
-                    PropertyChanged = nameof(ticketToEdit.Type),
-                    OldValue = ticketToEdit.Type.Name,
-                    NewValue = type.Name
-                };
-                ticketToEdit.Histories.Add(typeHistory);
+                var propChange = new PropertyChange();
+                propChange.PropertyName = nameof(ticketToEdit.Type);
+                propChange.OldValue = ticketToEdit.Type.Name;
+                propChange.NewValue = type.Name;
+                newHistory.PropertyChanges.Add(propChange);
                 ticketToEdit.Type = type;
             }
 
             if (ticketToEdit.Priority != priority)
             {
-                var priorityHistory = new TicketHistory()
-                {
-                    DateTime = DateTime.Now,
-                    User = user,
-                    PropertyChanged = nameof(ticketToEdit.Priority),
-                    OldValue = ticketToEdit.Priority.Name,
-                    NewValue = priority.Name
-                };
-                ticketToEdit.Histories.Add(priorityHistory);
+                var propChange = new PropertyChange();
+                propChange.PropertyName = nameof(ticketToEdit.Priority);
+                propChange.OldValue = ticketToEdit.Priority.Name;
+                propChange.NewValue = priority.Name;
+                newHistory.PropertyChanges.Add(propChange);
                 ticketToEdit.Priority = priority;
             }
-
-
 
             if (User.IsInRole(nameof(UserRoles.Admin)) || User.IsInRole(nameof(UserRoles.ProjectManager)))
             {
                 var status = DbContext.TicketStatuses.FirstOrDefault(t => t.Id == model.StatusId);
                 if (ticketToEdit.Status != status)
                 {
-                    var statusHistory = new TicketHistory()
-                    {
-                        DateTime = DateTime.Now,
-                        User = user,
-                        PropertyChanged = nameof(ticketToEdit.Status),
-                        OldValue = ticketToEdit.Status.Name,
-                        NewValue = status.Name
-                    };
-                    ticketToEdit.Histories.Add(statusHistory);
+                    var propChange = new PropertyChange();
+                    propChange.PropertyName = nameof(ticketToEdit.Status);
+                    propChange.OldValue = ticketToEdit.Status.Name;
+                    propChange.NewValue = status.Name;
+                    newHistory.PropertyChanges.Add(propChange);
                     ticketToEdit.Status = status;
                 }
+            }
+
+            if (newHistory.PropertyChanges.Any())
+            {
+                newHistory.DateTime = DateTime.Now;
+                newHistory.User = user;
+                ticketToEdit.Histories.Add(newHistory);
+                SendNotification(newHistory, user, ticketToEdit);
             }
 
             ticketToEdit.DateUpdated = DateTime.Now;
@@ -931,6 +910,7 @@ namespace Bug_Tracker.Controllers
                 file.SaveAs(mappedFolder + newFileName + file.FileName);
                 ticket.Attachments.Add(newAttachment);
                 DbContext.SaveChanges();
+                SendNotification(null, user, ticket);
             }
 
             var model = MakeTicketViewModel(ticket);
@@ -999,8 +979,8 @@ namespace Bug_Tracker.Controllers
             };
 
             ticket.Comments.Add(newComment);
-
             DbContext.SaveChanges();
+            SendNotification(null, user, ticket);
 
             var model = MakeTicketViewModel(ticket);
 
@@ -1065,6 +1045,48 @@ namespace Bug_Tracker.Controllers
                         select u).FirstOrDefault();
 
             return user;
+        }
+
+        private void SendNotification(TicketHistory history, ApplicationUser changer, Ticket ticket)
+        {
+            if (ticket.AssignedDeveloper != null)
+            {
+                var subject = $"Ticket Update";
+                var body = $"The following changes are made on ticket <strong>{ticket.Title}</strong> by <strong>{changer.Name}</strong>: <br><br>";
+
+                if (history != null)
+                {
+                    foreach (var c in history.PropertyChanges)
+                    {
+                        if (c.PropertyName == nameof(Ticket.AssignedDeveloper) && c.OldValue == "none")
+                        {
+                            body = $"You are assigned to Ticket <strong>{ticket.Title}</strong> by <strong>{changer.Name}</strong>.";
+                        }
+                        else if (c.PropertyName == nameof(Ticket.AssignedDeveloper) && c.NewValue == "none")
+                        {
+                            body = $"You are unassigned to Ticket <strong>{ticket.Title}</strong> by <strong>{changer.Name}</strong>.";
+                        }
+                        else
+                        {
+                            var newString = $" - <strong>{c.PropertyName}</strong> is changed from <strong>{c.OldValue }</strong> to <strong>{c.NewValue}</strong>. <br> ";
+                            body += newString;
+                        }
+                    }
+                }
+                else
+                {
+                    var newString = $" - a <strong>comment/attachment</strong> has been added on this ticket.";
+                    body += newString;
+                }
+
+                var mailMessage = new IdentityMessage();
+                mailMessage.Body = body;
+                mailMessage.Subject = subject;
+                mailMessage.Destination = ticket.AssignedDeveloper.Email;
+
+                var emailService = new EmailService();
+                emailService.Send(mailMessage);
+            }
         }
     }
 }

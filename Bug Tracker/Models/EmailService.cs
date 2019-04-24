@@ -27,9 +27,7 @@ namespace Bug_Tracker.Models
         /// <param name="to">The destination of the e-mail</param>
         /// <param name="body">The body of the e-mail</param>
         /// <param name="subject">The subject of the e-mail</param>
-        public void Send(string to,
-            string body,
-            string subject)
+        public void Send(string to, string body, string subject)
         {
             //Creates a MailMessage required to send messages
             var message = new MailMessage(SmtpFrom, to);
@@ -39,9 +37,9 @@ namespace Bug_Tracker.Models
 
             //Creates a SmtpClient required to handle the communication
             //between our application and the SMTP Server
-            var smtpClient = new SmtpClient("smtp.mailtrap.io", 2525);
+            var smtpClient = new SmtpClient(SmtpHost, SmtpPort);
             smtpClient.Credentials =
-                new NetworkCredential("7539996e7cd8f1", "19c2c4e19e8cd7");
+                new NetworkCredential(SmtpUsername, SmtpPassword);
             smtpClient.EnableSsl = true;
 
             //Send the message

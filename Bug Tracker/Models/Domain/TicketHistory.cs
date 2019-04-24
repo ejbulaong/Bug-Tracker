@@ -9,12 +9,18 @@ namespace Bug_Tracker.Models.Domain
     {
         public int Id { get; set; }
         public DateTime DateTime { get; set; }
-        public ApplicationUser User { get; set; }
-        public string PropertyChanged { get; set; }
-        public string OldValue { get; set; }
-        public string NewValue { get; set; }
+
+        public virtual ApplicationUser User { get; set; }
+        public string UserId { get; set; }
 
         public virtual Ticket Ticket { get; set; }
         public int TicketId { get; set; }
+
+        public virtual List<PropertyChange> PropertyChanges { get; set; }
+
+        public TicketHistory()
+        {
+            PropertyChanges = new List<PropertyChange>();
+        }
     }
 }

@@ -81,8 +81,18 @@
                                 @foreach (var m in Model.Histories)
                                 {
                                     <tr>
-                                        <td><strong>@m.PropertyChanged</strong> is change from <strong>@m.OldValue</strong> to <strong>@m.NewValue</strong> by <strong>@m.User.Name</strong></td>
-                                        <td>@m.DateTime</td>
+                                        <td>
+                                            @foreach (var p in m.PropertyChanges)
+                                            {
+                                                <span class="d-block"> <strong class="text-primary">@p.PropertyName</strong> changed from 
+                                                    <strong class="text-success">@p.OldValue</strong> into 
+                                                    <strong class="text-danger">@p.NewValue</strong></span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <span class="d-block">@m.DateTime</span>
+                                            <span class="d-block">by @m.User.Name</span>
+                                        </td>
                                     </tr>
                                 }
                             </tbody>
@@ -91,7 +101,7 @@
                 </div>
             </div>
         </div>
-    </div>    
+    </div>
 </div>
 
 <div class="row">
