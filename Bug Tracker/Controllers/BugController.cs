@@ -997,6 +997,36 @@ namespace Bug_Tracker.Controllers
         }
 
         [Authorize]
+        public ActionResult RemoveComment(int? Id, int? ticketId)
+        {
+            var ticket = (from t in DbContext.Tickets
+                          where t.Id == ticketId
+                          select t).FirstOrDefault();
+
+            var comment = (from c in DbContext.TicketComments
+                              where c.Id == Id
+                              select c).FirstOrDefault();
+
+            var userId = User.Identity.GetUserId();
+            var user = GetUserById(userId);
+
+            if (User.IsInRole(nameof(UserRoles.Submitter)) || User.IsInRole(nameof(UserRoles.Developer)))
+            {
+                if (comment.User != user)
+                {
+                    return RedirectToAction(nameof(BugController.ViewTicketDetails), "Bug", new { Id = ticket.Id });
+                }
+            }
+
+            DbContext.TicketComments.Remove(comment);
+            DbContext.SaveChanges();
+
+            var model = MakeTicketViewModel(ticket);
+
+            return RedirectToAction(nameof(BugController.ViewTicketDetails), "Bug", model);
+        }
+
+        [Authorize]
         public ActionResult ActivityLog()
         {
             var userId = User.Identity.GetUserId();

@@ -173,11 +173,29 @@
                                             <a href=""><img class="mx-auto rounded-circle img-fluid" src="~/Content/img/user.jpg" alt="avatar"></a>
                                         </div>
                                         <div class="comment-content col-md-11 col-sm-10">
-                                            <h6 class="small comment-meta"><a href="#">@comment.User.UserName</a> @comment.DateCreated</h6>
+                                            <h6 class="small comment-meta">
+                                                <a href="#">@comment.User.UserName</a> @comment.DateCreated
+                                                @if (User.IsInRole(nameof(UserRoles.Admin)) || User.IsInRole(nameof(UserRoles.ProjectManager)))
+                                                {
+                                                    <a href="@Url.Action(nameof(BugController.RemoveComment), "Bug", new { Id = comment.Id, ticketId = Model.Id })" title="Remove Comment">
+                                                        <i class="fas fa-times-circle text-danger"></i>
+                                                    </a>
+                                                }
+                                                else
+                                                {
+                                                    if (comment.User == Model.CurrentUser)
+                                                    {
+                                                        <a href="@Url.Action(nameof(BugController.RemoveComment), "Bug", new { Id = comment.Id, ticketId = Model.Id })" title="Remove Comment">
+                                                            <i class="fas fa-times-circle text-danger"></i>
+                                                        </a>
+                                                    }
+                                                }
+                                            </h6>
                                             <div class="comment-body">
-                                                <p>
+                                                <span>
                                                     @comment.Comment
-                                                    <br>
+                                                </span>
+                                                <br>
                                             </div>
                                         </div>
                                     </div>
