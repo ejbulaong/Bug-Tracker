@@ -173,7 +173,8 @@ namespace Bug_Tracker.Controllers
             {
                 Name = model.Name,
                 Details = model.Details,
-                Users = members
+                Users = members,
+                Active = true
             };
 
             DbContext.Projects.Add(newProject);
@@ -187,7 +188,7 @@ namespace Bug_Tracker.Controllers
         public ActionResult ViewAllProjects()
         {
             var model = (from p in DbContext.Projects
-                         where p != null
+                         where p.Active
                          select new ViewAllProjectsViewModel
                          {
                              Id = p.Id,
@@ -211,7 +212,7 @@ namespace Bug_Tracker.Controllers
                                 select u.Projects).FirstOrDefault();
 
             var model = (from p in userProjects
-                         where p != null
+                         where p.Active
                          select new ViewMyProjectsViewModel
                          {
                              Id = p.Id,
@@ -410,6 +411,21 @@ namespace Bug_Tracker.Controllers
                 Users = project.Users
             };
             return View(model);
+        }
+
+        [BugTrackerFiltersAuthorization(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
+        public ActionResult ArchiveProject(int? projectId)
+        {
+            if(projectId == null)
+            {
+                return RedirectToAction(nameof(HomeController.Index), "Home");
+            }
+
+            var projectToArchive = DbContext.Projects.FirstOrDefault(p=>p.Id == projectId);
+            projectToArchive.Active = false;
+            DbContext.SaveChanges();
+
+            return RedirectToAction(nameof(BugController.ViewAllProjects), "Bug");
         }
 
         [HttpGet]
@@ -701,7 +717,7 @@ namespace Bug_Tracker.Controllers
                             select s).ToList();
 
             var allProjects = (from p in DbContext.Projects
-                               where p != null
+                               where p.Active
                                select p).ToList();
 
             var model = new EditTicketViewModel()

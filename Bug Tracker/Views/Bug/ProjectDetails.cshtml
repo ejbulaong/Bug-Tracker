@@ -15,7 +15,10 @@
                     @if (User.IsInRole(nameof(UserRoles.Admin)) || User.IsInRole(nameof(UserRoles.ProjectManager)))
                     {
                         <a href="@Url.Action("EditProject", "Bug", new { id = Model.Id })" title="Edit Project">
-                            Edit Project
+                            [Edit Project]
+                        </a>
+                        <a href="@Url.Action(nameof(BugController.ArchiveProject),"Bug",new {projectId=@Model.Id })" title="Archive Project">
+                            [Archive Project]
                         </a>
                     }
                 </div>
@@ -36,8 +39,8 @@
 
                     @if (User.IsInRole(nameof(UserRoles.Admin)) || User.IsInRole(nameof(UserRoles.ProjectManager)))
                     {
-                        <a href="@Url.Action("EditMembers","Bug",new {id=@Model.Id })" title="Edit Members">
-                            Edit Members
+                        <a href="@Url.Action(nameof(BugController.EditMembers),"Bug",new {id=@Model.Id })" title="Edit Members">
+                            [Edit Members]
                         </a>
                     }
                 </div>

@@ -15,6 +15,8 @@ namespace Bug_Tracker.Models.Domain
 
         public virtual List<ApplicationUser> Users { get; set; }
         public virtual List<Ticket> Tickets { get; set; }
+
+        public bool Active { get; set; } 
  
         public Project()
         {
