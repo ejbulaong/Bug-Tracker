@@ -13,14 +13,16 @@
 {
     if (Model.Notification)
     {
+        <span class="text-success">Notifications On</span>
         <a href="@Url.Action(nameof(BugController.ToggleNotification),"Bug",new {Id=Model.Id })" title="Edit Ticket">
-            Turn Off Notifications
+            <span class="text-danger">[Turn Off]</span>
         </a>
     }
     else
     {
+        <span class="text-danger">Notifications Off</span>
         <a href="@Url.Action(nameof(BugController.ToggleNotification),"Bug",new {Id=Model.Id })" title="Edit Ticket">
-            Turn On Notifications
+            <span class="text-success">[Turn On]</span>
         </a>
     }
 }

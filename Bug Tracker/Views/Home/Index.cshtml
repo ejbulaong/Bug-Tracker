@@ -1,4 +1,5 @@
-﻿@{
+﻿@model HomeIndexViewModel
+@{
     ViewBag.Title = "Home Page";
 }
 
@@ -6,70 +7,113 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-2">
-            <a href="@Url.Action("ViewMyProjects","Bug")" title="My Projects">
-                <i class="fas fa-folder dashboard-icon" id="my-projects"></i>
-                <h5>My Projects</h5>
-            </a>
+        <div class="col-4">
+            <div class="card text-white bg-primary mb-3" style="max-width: 18rem;">
+                <div class="card-header bg-primary">
+                    My Projects
+                    <span class="d-inline">Total: @Model.CurrentUser.Projects.Count()</span>
+                </div>
+                <div class="card-body td-center">
+                    <a href="@Url.Action(nameof(BugController.ViewMyProjects),"Bug")" title="My Projects">
+                        <i class="fas fa-folder dashboard-icon text-white" id="my-projects"></i>
+                        <h5 class="text-white">Go to My Projects</h5>
+                    </a>
+                </div>
+            </div>
         </div>
+
         @if (User.IsInRole(nameof(UserRoles.Admin)) || User.IsInRole(nameof(UserRoles.ProjectManager)))
         {
-            <div class="col-2">
-                <a href="@Url.Action("ViewAllProjects","Bug")" title="All Projects">
-                    <i class="fas fa-folder dashboard-icon" id="all-projects"></i>
-                    <h5>All Projects</h5>
-                </a>
+            <div class="col-4">
+                <div class="card text-white bg-primary mb-3" style="max-width: 18rem;">
+                    <div class="card-header bg-primary">
+                        All Projects
+                        <span class="d-inline">Total: @Model.AllProjects.Count()</span>
+                    </div>
+                    <div class="card-body td-center">
+                        <a href="@Url.Action(nameof(BugController.ViewAllProjects),"Bug")" title="My Projects">
+                            <i class="fas fa-folder dashboard-icon text-white" id="all-projects"></i>
+                            <h5 class="text-white">Go to All Projects</h5>
+                        </a>
+                    </div>
+                </div>
             </div>
         }
     </div>
     <hr class="sidebar-divider">
     <div class="row">
-        @if (!User.Identity.IsAuthenticated)
-        {
-            <div class="col-2">
-                <a href="@Url.Action(nameof(BugController.ViewMyCreatedTickets),"Bug")" title="My Tickets">
-                    <i class="fas fa-fw fa-ticket-alt dashboard-icon" id="my-tickets"></i>
-                    <h5>My Tickets</h5>
-                </a>
-            </div>
-        }
         @if (User.IsInRole(nameof(UserRoles.Submitter)))
         {
-            <div class="col-2">
-                <a href="@Url.Action(nameof(BugController.ViewMyCreatedTickets),"Bug")" title="My Tickets">
-                    <i class="fas fa-fw fa-ticket-alt dashboard-icon" id="my-tickets"></i>
-                    <h5>My Created Tickets</h5>
-                </a>
+            <div class="col-4">
+                <div class="card text-white bg-primary mb-3" style="max-width: 18rem;">
+                    <div class="card-header bg-primary">
+                        My Created Tickets
+                        <span class="d-inline">Total: @Model.CurrentUser.Projects.Count()</span>
+                    </div>
+                    <div class="card-body td-center">
+                        <a href="@Url.Action(nameof(BugController.ViewMyCreatedTickets),"Bug")" title="My Projects">
+                            <i class="fas fa-folder dashboard-icon text-white" id="my-projects"></i>
+                            <h5 class="text-white">Go to My Created Tickets</h5>
+                        </a>
+                    </div>
+                </div>
             </div>
         }
 
         @if (User.IsInRole(nameof(UserRoles.Admin)) || User.IsInRole(nameof(UserRoles.ProjectManager)))
         {
-            <div class="col-2">
-                <a href="@Url.Action(nameof(BugController.ViewAllTickets),"Bug")" title="All Tickets">
-                    <i class="fas fa-fw fa-ticket-alt dashboard-icon" id="all-tickets"></i>
-                    <h5>All Tickets</h5>
-                </a>
+            <div class="col-4">
+                <div class="card text-white bg-primary mb-3" style="max-width: 18rem;">
+                    <div class="card-header bg-primary">
+                        All Tickets
+                        <span class="d-inline">Total: @Model.AllTickets.Count()</span>
+                    </div>
+                    <div class="card-body td-center">
+                        <span class="d-block">Open: @Model.OpenTickets.Count()</span>
+                        <span class="d-block">Resolved: @Model.ResolvedTickets.Count()</span>
+                        <span class="d-block">Rejected: @Model.RejectedTickets.Count()</span>
+                        <a href="@Url.Action(nameof(BugController.ViewAllTickets),"Bug")" title="My Projects">
+                            <i class="fas fa-fw fa-ticket-alt dashboard-icon text-white" id="all-projects"></i>
+                            <h5 class="text-white">Go to All Tickets</h5>
+                        </a>
+                    </div>
+                </div>
             </div>
         }
 
         @if (User.IsInRole(nameof(UserRoles.Developer)) || User.IsInRole(nameof(UserRoles.Submitter)))
         {
-            <div class="col-2">
-                <a href="@Url.Action(nameof(BugController.ViewMyProjectsTickets),"Bug")" title="All Tickets">
-                    <i class="fas fa-fw fa-ticket-alt dashboard-icon" id="all-tickets"></i>
-                    <h5>My Project's Tickets</h5>
-                </a>
+            <div class="col-4">
+                <div class="card text-white bg-primary mb-3" style="max-width: 18rem;">
+                    <div class="card-header bg-primary">
+                        My Project's Tickets
+                        <span class="d-inline">Total: @Model.MyProjectsTickets.Count()</span>
+                    </div>
+                    <div class="card-body td-center">
+                        <a href="@Url.Action(nameof(BugController.ViewMyProjectsTickets),"Bug")" title="My Projects">
+                            <i class="fas fa-folder dashboard-icon text-white" id="my-projects"></i>
+                            <h5 class="text-white">Go to My Project's Tickets</h5>
+                        </a>
+                    </div>
+                </div>
             </div>
         }
 
         @if (User.IsInRole(nameof(UserRoles.Developer)))
         {
-            <div class="col-2">
-                <a href="@Url.Action(nameof(BugController.ViewMyAssignedTickets),"Bug")" title="All Tickets">
-                    <i class="fas fa-fw fa-ticket-alt dashboard-icon" id="all-tickets"></i>
-                    <h5>Tickets Assigned To Me</h5>
-                </a>
+            <div class="col-4">
+                <div class="card text-white bg-primary mb-3" style="max-width: 18rem;">
+                    <div class="card-header bg-primary">
+                        Tickets Assigned To Me
+                        <span class="d-inline">Total: @Model.CurrentUser.AssignedTickets.Count()</span>
+                    </div>
+                    <div class="card-body td-center">
+                        <a href="@Url.Action(nameof(BugController.ViewMyAssignedTickets),"Bug")" title="My Projects">
+                            <i class="fas fa-folder dashboard-icon text-white" id="my-projects"></i>
+                            <h5 class="text-white">Go to My Assigned Tickets</h5>
+                        </a>
+                    </div>
+                </div>
             </div>
         }
 
@@ -77,12 +121,18 @@
     <hr class="sidebar-divider">
     @if (User.IsInRole(nameof(UserRoles.Admin)))
     {
-        <div class="row">
-            <div class="col-2">
-                <a href="@Url.Action("ManageUsers","Bug")" title="Manage Users">
-                    <i class="fas fa-users dashboard-icon" id="manage-users"></i>
-                    <h5>Manage Users</h5>
-                </a>
+        <div class="col-4">
+            <div class="card text-white bg-primary mb-3" style="max-width: 18rem;">
+                <div class="card-header bg-primary">
+                    Manage Users
+                    <span class="d-inline">Total: @Model.AllUsers.Count()</span>
+                </div>
+                <div class="card-body td-center">
+                    <a href="@Url.Action(nameof(BugController.ManageUsers),"Bug")" title="My Projects">
+                        <i class="fas fa-users dashboard-icon text-white" id="my-projects"></i>
+                        <h5 class="text-white">Go to Manage Users</h5>
+                    </a>
+                </div>
             </div>
         </div>
     }

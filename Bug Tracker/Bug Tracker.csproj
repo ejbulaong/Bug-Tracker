@@ -213,6 +213,7 @@
     <Compile Include="Models\ViewModels\EditProjectViewModel.cs" />
     <Compile Include="Models\ViewModels\EditRolesViewModel.cs" />
     <Compile Include="Models\ViewModels\EditTicketViewModel.cs" />
+    <Compile Include="Models\ViewModels\HomeIndexViewModel.cs" />
     <Compile Include="Models\ViewModels\ManageUsersViewModel.cs" />
     <Compile Include="Models\ViewModels\ProjectDetailsViewModel.cs" />
     <Compile Include="Models\ViewModels\ViewAllProjectsViewModel.cs" />

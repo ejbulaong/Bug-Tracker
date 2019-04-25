@@ -21,12 +21,6 @@ namespace Bug_Tracker.Models
         private string SmtpPassword = ConfigurationManager.AppSettings["SmtpPassword"];
         private string SmtpFrom = ConfigurationManager.AppSettings["SmtpFrom"];
 
-        /// <summary>
-        /// Sends an e-mail
-        /// </summary>
-        /// <param name="to">The destination of the e-mail</param>
-        /// <param name="body">The body of the e-mail</param>
-        /// <param name="subject">The subject of the e-mail</param>
         public void Send(List<string> to, string body, string subject)
         {
             //Creates a MailMessage required to send messages
@@ -51,11 +45,6 @@ namespace Bug_Tracker.Models
             smtpClient.Send(message);
         }
 
-        /// <summary>
-        /// Required by Microsoft Interface IIdentityMessageService in order to work with Identity Framework
-        /// </summary>
-        /// <param name="message">Object containing the necessary information to send e-mails</param>
-        /// <returns></returns>
         public Task SendAsync(IdentityMessage message)
         {
             var to = new List<string>();
