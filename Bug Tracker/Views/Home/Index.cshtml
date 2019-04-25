@@ -119,21 +119,23 @@
 
     </div>
     <hr class="sidebar-divider">
-    @if (User.IsInRole(nameof(UserRoles.Admin)))
-    {
-        <div class="col-4">
-            <div class="card text-white bg-primary mb-3" style="max-width: 18rem;">
-                <div class="card-header bg-primary">
-                    Manage Users
-                    <span class="d-inline">Total: @Model.AllUsers.Count()</span>
-                </div>
-                <div class="card-body td-center">
-                    <a href="@Url.Action(nameof(BugController.ManageUsers),"Bug")" title="My Projects">
-                        <i class="fas fa-users dashboard-icon text-white" id="my-projects"></i>
-                        <h5 class="text-white">Go to Manage Users</h5>
-                    </a>
+    <div class="row">
+        @if (User.IsInRole(nameof(UserRoles.Admin)))
+        {
+            <div class="col-4">
+                <div class="card text-white bg-primary mb-3" style="max-width: 18rem;">
+                    <div class="card-header bg-primary">
+                        Manage Users
+                        <span class="d-inline">Total: @Model.AllUsers.Count()</span>
+                    </div>
+                    <div class="card-body td-center">
+                        <a href="@Url.Action(nameof(BugController.ManageUsers),"Bug")" title="My Projects">
+                            <i class="fas fa-users dashboard-icon text-white" id="my-projects"></i>
+                            <h5 class="text-white">Go to Manage Users</h5>
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
-    }
+        }
+    </div>
 </div>

@@ -24,5 +24,6 @@ namespace Bug_Tracker.Models.ViewModels
         public List<TicketHistory> Histories { get; set; }
         public List<ApplicationUser> NotificationReceiver { get; set; }
         public bool Notification { get; set; }
+        public ApplicationUser CurrentUser { get; set; }
     }
 }

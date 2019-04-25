@@ -73,16 +73,36 @@
                     <input type="file" name="file" id="file" />
                     <button type="submit" class="btn btn-primary">Attach</button>
                 </form>
-                @foreach (var a in Model.Attachments)
+                @if (User.IsInRole(nameof(UserRoles.Admin)) || User.IsInRole(nameof(UserRoles.ProjectManager)))
                 {
-                    <div class="d-block">
-                        <a href="@Url.Content(a.FilePath)">
-                            @a.FileName
-                        </a>
-                        <a href="@Url.Action(nameof(BugController.RemoveAttachment),"Bug",new {Id=a.Id,ticketId=Model.Id })" title="Remove Attachment">
-                            <i class="fas fa-minus-square"></i>
-                        </a>
-                    </div>
+                    foreach (var a in Model.Attachments)
+                    {
+                        <div class="d-block">
+                            <a href="@Url.Content(a.FilePath)">
+                                @a.FileName
+                            </a>
+                            <a href="@Url.Action(nameof(BugController.RemoveAttachment), "Bug", new { Id = a.Id, ticketId = Model.Id })" title="Remove Attachment">
+                                <i class="fas fa-minus-square"></i>
+                            </a>
+                        </div>
+                    }
+                }
+                else
+                {
+                    foreach (var a in Model.Attachments)
+                    {
+                        <div class="d-block">
+                            <a href="@Url.Content(a.FilePath)">
+                                @a.FileName
+                            </a>
+                            @if (a.User == Model.CurrentUser)
+                            {
+                                <a href="@Url.Action(nameof(BugController.RemoveAttachment), "Bug", new { Id = a.Id, ticketId = Model.Id })" title="Remove Attachment">
+                                    <i class="fas fa-minus-square"></i>
+                                </a>
+                            }
+                        </div>
+                    }
                 }
             </div>
         </div>
@@ -101,8 +121,6 @@
                                 <tr>
                                     <th>Changes</th>
                                     <th>Date and Time</th>
-
-
                                 </tr>
                             </thead>
                             <tbody>

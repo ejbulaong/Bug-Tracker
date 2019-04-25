@@ -928,6 +928,16 @@ namespace Bug_Tracker.Controllers
                               where a.Id == Id
                               select a).FirstOrDefault();
 
+            var userId = User.Identity.GetUserId();
+            var user = GetUserById(userId);
+
+            if (User.IsInRole(nameof(UserRoles.Submitter)) || User.IsInRole(nameof(UserRoles.Developer)))
+            {
+                if (attachment.User != user)
+                {
+                    return RedirectToAction(nameof(BugController.ViewTicketDetails), "Bug", new { Id = ticket.Id });
+                }
+            }
 
             string fullPath = Request.MapPath("~/Uploads/" + attachment.FileName);
 
@@ -1031,6 +1041,7 @@ namespace Bug_Tracker.Controllers
 
         private TicketViewModel MakeTicketViewModel(Ticket ticket)
         {
+            var user = GetUserById(User.Identity.GetUserId());
             var model = new TicketViewModel()
             {
                 Id = ticket.Id,
@@ -1047,7 +1058,8 @@ namespace Bug_Tracker.Controllers
                 Comments = ticket.Comments,
                 Attachments = ticket.Attachments,
                 Histories = ticket.Histories,
-                NotificationReceiver = ticket.NotificationReceiver
+                NotificationReceiver = ticket.NotificationReceiver,
+                CurrentUser = user
             };
 
             return model;
@@ -1084,11 +1096,11 @@ namespace Bug_Tracker.Controllers
                     {
                         if (c.PropertyName == nameof(Ticket.AssignedDeveloper) && c.OldValue == "none")
                         {
-                            body = $"You are assigned to Ticket <strong>{ticket.Title}</strong> by <strong>{changer.Name}</strong>.";
+                            body = $"{ticket.AssignedDeveloper.Name} is assigned to Ticket <strong>{ticket.Title}</strong> by <strong>{changer.Name}</strong>.";
                         }
                         else if (c.PropertyName == nameof(Ticket.AssignedDeveloper) && c.NewValue == "none")
                         {
-                            body = $"You are unassigned to Ticket <strong>{ticket.Title}</strong> by <strong>{changer.Name}</strong>.";
+                            body = $"{ticket.AssignedDeveloper.Name} is unassigned to Ticket <strong>{ticket.Title}</strong> by <strong>{changer.Name}</strong>.";
                         }
                         else
                         {
@@ -1104,13 +1116,13 @@ namespace Bug_Tracker.Controllers
                 }
 
                 to.Add(ticket.AssignedDeveloper.Email);
-                foreach(var u in ticket.NotificationReceiver)
+                foreach (var u in ticket.NotificationReceiver)
                 {
                     to.Add(u.Email);
                 }
 
                 var emailService = new EmailService();
-                emailService.Send(to,body,subject);
+                emailService.Send(to, body, subject);
             }
         }
     }
