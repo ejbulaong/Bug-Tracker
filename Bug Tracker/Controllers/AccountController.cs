@@ -106,6 +106,49 @@ namespace Bug_Tracker.Controllers
             }
         }
 
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult DemoLoginView()
+        {
+            return View();
+        }
+
+        [AllowAnonymous]
+        public async Task<ActionResult> DemoLogin(string email, string returnUrl)
+        {
+            var model = new LoginViewModel();
+            model.Email = email;
+            model.Password = "Password-1";
+            model.RememberMe = false;
+
+            // This doesn't count login failures towards account lockout
+            // To enable password failures to trigger account lockout, change to shouldLockout: true
+            var result = await SignInManager.PasswordSignInAsync(email, "Password-1", false, shouldLockout: false);
+            switch (result)
+            {
+                case SignInStatus.Success:
+                    var context = new ApplicationDbContext();
+                    var log = new UserLog();
+
+                    log.UserName = email;
+                    log.ActionName = "Login";
+                    log.ControllerName = "Account";
+                    log.Time = DateTime.Now;
+
+                    context.UserLogs.Add(log);
+                    context.SaveChanges();
+                    return RedirectToLocal(returnUrl);
+                case SignInStatus.LockedOut:
+                    return View("Lockout");
+                case SignInStatus.RequiresVerification:
+                    return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
+                case SignInStatus.Failure:
+                default:
+                    ModelState.AddModelError("", "Invalid login attempt.");
+                    return View(model);
+            }
+        }
+
         //
         // GET: /Account/VerifyCode
         [AllowAnonymous]

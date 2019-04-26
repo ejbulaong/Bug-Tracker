@@ -157,6 +157,97 @@ namespace Bug_Tracker.Migrations
                 context.TicketStatuses.Add(rejected);
             }
 
+            //Creating Demo Log-Ins
+            ApplicationUser demoSubmitter;
+            ApplicationUser demoDeveloper;
+            ApplicationUser demoProjectManager;
+            ApplicationUser demoAdmin;
+
+            if (!context.Users.Any(
+                p => p.UserName == "demosubmitter@mybugtracker.com"))
+            {
+                demoSubmitter = new ApplicationUser();
+                demoSubmitter.Name = "DemoSubmitter";
+                demoSubmitter.UserName = "demosubmitter@mybugtracker.com";
+                demoSubmitter.Email = "demosubmitter@mybugtracker.com";
+                userManager.Create(demoSubmitter, "Password-1");
+            }
+            else
+            {
+                demoSubmitter = context
+                    .Users
+                    .First(p => p.UserName == "demosubmitter@mybugtracker.com");
+            }
+
+            if (!context.Users.Any(
+                p => p.UserName == "demodeveloper@mybugtracker.com"))
+            {
+                demoDeveloper = new ApplicationUser();
+                demoDeveloper.Name = "DemoDeveloper";
+                demoDeveloper.UserName = "demodeveloper@mybugtracker.com";
+                demoDeveloper.Email = "demodeveloper@mybugtracker.com";
+                userManager.Create(demoDeveloper,"Password-1");
+            }
+            else
+            {
+                demoDeveloper = context
+                    .Users
+                    .First(p => p.UserName == "demodeveloper@mybugtracker.com");
+            }
+
+            if (!context.Users.Any(
+                p => p.UserName == "demoprojectmanager@mybugtracker.com"))
+            {
+                demoProjectManager = new ApplicationUser();
+                demoProjectManager.Name = "DemoProjectManager";
+                demoProjectManager.UserName = "demoprojectmanager@mybugtracker.com";
+                demoProjectManager.Email = "demoprojectmanager@mybugtracker.com";
+                userManager.Create(demoProjectManager, "Password-1");
+            }
+            else
+            {
+                demoProjectManager = context
+                    .Users
+                    .First(p => p.UserName == "demoprojectmanager@mybugtracker.com");
+            }
+
+            if (!context.Users.Any(
+                p => p.UserName == "demoadmin@mybugtracker.com"))
+            {
+                demoAdmin = new ApplicationUser();
+                demoAdmin.Name = "DemoAdmin";
+                demoAdmin.UserName = "demoadmin@mybugtracker.com";
+                demoAdmin.Email = "demoadmin@mybugtracker.com";
+                userManager.Create(demoAdmin, "Password-1");
+            }
+            else
+            {
+                demoAdmin = context
+                    .Users
+                    .First(p => p.UserName == "demoadmin@mybugtracker.com");
+            }
+
+            //create roles for demo logins
+            if (!userManager.IsInRole(demoSubmitter.Id, nameof(UserRoles.Submitter)))
+            {
+                userManager.AddToRole(demoSubmitter.Id, nameof(UserRoles.Submitter));
+            }
+
+            if (!userManager.IsInRole(demoDeveloper.Id, nameof(UserRoles.Developer)))
+            {
+                userManager.AddToRole(demoDeveloper.Id, nameof(UserRoles.Developer));
+            }
+
+            if (!userManager.IsInRole(demoProjectManager.Id, nameof(UserRoles.ProjectManager)))
+            {
+                userManager.AddToRole(demoProjectManager.Id, nameof(UserRoles.ProjectManager));
+            }
+
+            if (!userManager.IsInRole(demoAdmin.Id, nameof(UserRoles.Admin)))
+            {
+                userManager.AddToRole(demoAdmin.Id, nameof(UserRoles.Admin));
+            }
+
             context.SaveChanges();
         }
     }

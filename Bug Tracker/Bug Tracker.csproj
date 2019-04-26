@@ -2088,6 +2088,7 @@
     <Content Include="Views\Bug\ViewTicketDetails.cshtml" />
     <Content Include="Views\Bug\UnAuthorizeAccess.cshtml" />
     <Content Include="Views\Bug\ActivityLog.cshtml" />
+    <Content Include="Views\Account\DemoLoginView.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

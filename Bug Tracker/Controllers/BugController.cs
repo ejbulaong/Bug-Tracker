@@ -416,12 +416,12 @@ namespace Bug_Tracker.Controllers
         [BugTrackerFiltersAuthorization(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
         public ActionResult ArchiveProject(int? projectId)
         {
-            if(projectId == null)
+            if (projectId == null)
             {
                 return RedirectToAction(nameof(HomeController.Index), "Home");
             }
 
-            var projectToArchive = DbContext.Projects.FirstOrDefault(p=>p.Id == projectId);
+            var projectToArchive = DbContext.Projects.FirstOrDefault(p => p.Id == projectId);
             projectToArchive.Active = false;
             DbContext.SaveChanges();
 
@@ -1020,8 +1020,8 @@ namespace Bug_Tracker.Controllers
                           select t).FirstOrDefault();
 
             var comment = (from c in DbContext.TicketComments
-                              where c.Id == Id
-                              select c).FirstOrDefault();
+                           where c.Id == Id
+                           select c).FirstOrDefault();
 
             var userId = User.Identity.GetUserId();
             var user = GetUserById(userId);
